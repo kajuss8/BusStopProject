@@ -12,6 +12,7 @@ const (
 
 type Stop struct {
 	Id            uint16           `json:"Id"`
+	StopId        string           `json:"stopId"`
 	StopCode      string           `json:"stopCode"`
 	StopName      string           `json:"stopName"`
 	StopDesc      string           `json:"stopDesc"`
