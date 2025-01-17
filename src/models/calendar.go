@@ -10,8 +10,8 @@ const (
 )
 
 type Calendar struct {
-	Id              uint32                            `json:"id"`
-	ServiceId       uint32                            `json:"serviceId"`
+	Id              int                            `json:"id"`
+	ServiceId       int                            `json:"serviceId"`
 	WeekDaysService map[string]DayServiceAvailability `json:"weekServices"`
 	StartDate       time.Time                         `json:"startDate"`
 	EndDate         time.Time                         `json:"endDate"`

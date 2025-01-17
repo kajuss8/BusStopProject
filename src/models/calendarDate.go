@@ -1,7 +1,5 @@
 package models
 
-import "time"
-
 type ServiceAvailability uint8
 
 const (
@@ -10,8 +8,8 @@ const (
 )
 
 type CalendarDates struct {
-	Id            uint32              `json:"id"`
-	ServiceId     uint32              `json:"serviceId"`
-	Date          time.Time           `json:"date"`
+	Id            int              `json:"id"`
+	ServiceId     int              `json:"serviceId"`
+	Date          string           `json:"date"`
 	ExceptionType ServiceAvailability `json:"exceptionType"`
 }

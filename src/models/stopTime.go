@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"busProject/src/handleFiles"
+	"strconv"
+)
 
 type PickupStatus uint8
 
@@ -21,12 +24,41 @@ const (
 )
 
 type StopTime struct {
-	Id            uint32        `json:"id"`
 	TripId        string        `json:"tripId"`
-	ArrivalTime   time.Time     `json:"arrivalTime"`
-	DepartureTime time.Time     `json:"departureTime"`
-	StopId        uint16        `json:"stopId"`
-	StopSequence  uint8         `json:"stopSequence"`
+	ArrivalTime   string     	`json:"arrivalTime"`
+	DepartureTime string     	`json:"departureTime"`
+	StopId        int        	`json:"stopId"`
+	StopSequence  int         	`json:"stopSequence"`
 	PickupType    PickupStatus  `json:"pickupType"`
 	DropOffType   DropOffStatus `json:"dropOffType"`
+}
+
+const stopTimeFilePath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder/stop_times.txt"
+const stopIdColumnName = "stop_id"
+
+func GetAllArriveTimesByStopId(stopId string) ([]StopTime, error) {
+
+	var stopTimes []StopTime
+	arriveTimes := handleFiles.ReadFromCsvAllWithSameId(stopTimeFilePath, stopIdColumnName, stopId)
+	
+	for _, arriveTime := range arriveTimes {
+		tripId := arriveTime[0]
+		arrivalTime := arriveTime[1]
+		departureTime := arriveTime[2]
+		stopId, _ := strconv.Atoi(arriveTime[3])
+		stopSequence, _ := strconv.Atoi(arriveTime[4])
+		pickupType, _ := strconv.Atoi(arriveTime[5])
+		dropOffType, _ := strconv.Atoi(arriveTime[6])
+
+		stopTimes = append(stopTimes ,StopTime{
+			TripId:        tripId,
+			ArrivalTime:   arrivalTime,
+			DepartureTime: departureTime,
+			StopId:        stopId,
+			StopSequence:  stopSequence,
+			PickupType:    PickupStatus(pickupType),
+			DropOffType:   DropOffStatus(dropOffType),
+		})
+	}
+	return stopTimes, nil
 }

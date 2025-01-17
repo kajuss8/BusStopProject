@@ -16,7 +16,7 @@ const (
 )
 
 type Route struct {
-	Id 				uint32 			`json:"id"`
+	Id 				int 			`json:"id"`
 	RouteId 		string 			`json:"routeId"`
 	RouteShortName 	string 			`json:"routeShortName"`
 	RouteLongName 	string 			`json:"routeLongName"`
@@ -25,5 +25,5 @@ type Route struct {
 	RouteUrl 		string 			`json:"routeUrl"`
 	RouteColor 		string 			`json:"routeColor"`
 	RouteTextColor 	string 			`json:"routeTextColor"`
-	RouteSortOrder 	uint32 			`json:"routeSortOrder"`
+	RouteSortOrder 	int 			`json:"routeSortOrder"`
 }

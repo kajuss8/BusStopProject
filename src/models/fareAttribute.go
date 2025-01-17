@@ -17,11 +17,11 @@ const (
 )
 
 type FareAttribute struct {
-	Id 				uint32 			`json:"id"`
-	FareId 			uint32 			`json:"fareId"`
-	Price 			float32 		`json:"price"`
+	Id 				int 			`json:"id"`
+	FareId 			int 			`json:"fareId"`
+	Price 			float64 		`json:"price"`
 	CurrencyType 	string 			`json:"currencyType"`
 	PaymentMethod 	FarePayment 	`json:"paymentMethod"`
 	Transfers 		TransferPermitted `json:"transfers"`
-	TransferDuration uint16 		`json:"transferDuration"`
+	TransferDuration int 			`json:"transferDuration"`
 }

@@ -20,7 +20,7 @@ type Stop struct {
 	StopLon       float32          `json:"stopLon"`
 	StopUrl       string           `json:"stopUrl"`
 	LocationType  LocationCategory `json:"locationType"`
-	ParentStation uint16           `json:"parentStation"`
+	ParentStation int			   `json:"parentStation"`
 }
 
 func CreateStops() []Stop {
