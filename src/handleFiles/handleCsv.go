@@ -7,50 +7,28 @@ import (
 	"strings"
 )
 
-func ReadFromCsvAllWithSameId(filePath, columnName, id string) ([][]string, error) {
-	
-	var result [][]string
-	
-	file, err := os.Open(filePath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
+func ReadFile(filePath string) ([][]string ,error){
 
-	reader := csv.NewReader(file)
+	file, err := os.Open(filePath)  
+    if err != nil { 
+        log.Fatal("Error while reading the file", err) 
+    } 
+  
+    defer file.Close() 
+  
+    reader := csv.NewReader(file) 
 
-	headers, err := reader.Read()
+    headers, err := reader.Read()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	headers[0] = strings.TrimPrefix(headers[0], "\ufeff")
 
-	columnIndex := -1
-	for i, header := range headers {
-		if header == columnName {
-			columnIndex = i
-			break
-		}
-	}
-	if columnIndex == -1 {
-		log.Fatalf("Column %s not found", columnName)
+	records, err := reader.ReadAll()
+	if err != nil {
+		log.Fatal("Error while reading the file", err)
 	}
 
-	for {
-		record, err := reader.Read()
-		if err != nil {
-			if err.Error() == "EOF" && result == nil {
-				return result, err
-			}else{
-				break
-			}
-		}
-		if record[columnIndex] == id {
-			result = append(result, record)
-		}
-	}
-
-	return result, nil
+	return records, nil
 }
-

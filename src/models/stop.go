@@ -11,7 +11,6 @@ const (
 )
 
 type Stop struct {
-	Id            int		    `json:"id"`
 	StopId        string		`json:"stopId"`
 	StopCode      string		`json:"stopCode"`
 	StopName      string		`json:"stopName"`
@@ -23,12 +22,8 @@ type Stop struct {
 	ParentStation int		    `json:"parentStation"`
 }
 
-func CreateStops() []Stop {
-	return []Stop{
-		{1, "1", "1", "Stop 1", "Stop 1 Description", 1.0, 1.0, "http://stop1.com", StopOrPlatform, 0},
-		{2, "2", "2", "Stop 2", "Stop 2 Description", 2.0, 2.0, "http://stop2.com", StopOrPlatform, 0},
-		{3, "3", "3", "Stop 3", "Stop 3 Description", 3.0, 3.0, "http://stop3.com", EntranceExit, 0},
-		{4, "4", "4", "Stop 4", "Stop 4 Description", 4.0, 4.0, "http://stop4.com", StopOrPlatform, 0},
-		{5, "5", "5", "Stop 5", "Stop 5 Description", 5.0, 5.0, "http://stop5.com", Station, 0},
-	}
-}
+//const stopFilePath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder/stop_times.txt"
+//const stopIdColumnName = "stop_id"
+
+
+

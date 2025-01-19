@@ -17,7 +17,6 @@ const (
 )
 
 type Trip struct {
-	Id                   int                  	 `json:"id"`
 	RouteId              string                  `json:"routeId"`
 	ServiceId            int                  	 `json:"serviceId"`
 	TripId               string                  `json:"tripId"`

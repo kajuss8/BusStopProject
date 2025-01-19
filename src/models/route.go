@@ -16,7 +16,6 @@ const (
 )
 
 type Route struct {
-	Id 				int 			`json:"id"`
 	RouteId 		string 			`json:"routeId"`
 	RouteShortName 	string 			`json:"routeShortName"`
 	RouteLongName 	string 			`json:"routeLongName"`
