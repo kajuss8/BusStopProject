@@ -17,13 +17,13 @@ const (
 )
 
 type Trip struct {
-	Id                   int	`json:"id"`
-	RouteId              string	`json:"routeId"`
-	ServiceId            int	`json:"serviceId"`
-	TripId               string	`json:"tripId"`
-	TripHeadsign         string	`json:"tripHeadsign"`
-	DirectionId          Direction	`json:"directionId"`
-	BlockId              int	`json:"blockId"`
-	ShapeId              string	`json:"shapeId"`
-	WheelchairAccessible WheelchairAccessibility	`json:"wheelchairAccessible"`
+	Id                   int                  	 `json:"id"`
+	RouteId              string                  `json:"routeId"`
+	ServiceId            int                  	 `json:"serviceId"`
+	TripId               string                  `json:"tripId"`
+	TripHeadsign         string                  `json:"tripHeadsign"`
+	DirectionId          Direction               `json:"directionId"`
+	BlockId              int                  	 `json:"blockId"`
+	ShapeId              string                  `json:"shapeId"`
+	WheelchairAccessible WheelchairAccessibility `json:"wheelchairAccessible"`
 }

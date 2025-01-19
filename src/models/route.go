@@ -16,14 +16,14 @@ const (
 )
 
 type Route struct {
-	Id	int	`json:"id"`
-	RouteId	string	`json:"routeId"`
-	RouteShortName	string	`json:"routeShortName"`
-	RouteLongName	string	`json:"routeLongName"`
-	RouteDesc	string	`json:"routeDesc"`
-	RouteType	TransportType	`json:"routeType"`
-	RouteUrl	string	`json:"routeUrl"`
-	RouteColor	string	`json:"routeColor"`
-	RouteTextColor	string	`json:"routeTextColor"`
-	RouteSortOrder	int	`json:"routeSortOrder"`
+	Id 				int 			`json:"id"`
+	RouteId 		string 			`json:"routeId"`
+	RouteShortName 	string 			`json:"routeShortName"`
+	RouteLongName 	string 			`json:"routeLongName"`
+	RouteDesc 		string 			`json:"routeDesc"`
+	RouteType 		TransportType 	`json:"routeType"`
+	RouteUrl 		string 			`json:"routeUrl"`
+	RouteColor 		string 			`json:"routeColor"`
+	RouteTextColor 	string 			`json:"routeTextColor"`
+	RouteSortOrder 	int 			`json:"routeSortOrder"`
 }

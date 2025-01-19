@@ -8,8 +8,8 @@ const (
 )
 
 type CalendarDates struct {
-	Id	int	`json:"id"`
-	ServiceId	int	`json:"serviceId"`
-	Date	string	`json:"date"`
-	ExceptionType	ServiceAvailability	`json:"exceptionType"`
+	Id            int              `json:"id"`
+	ServiceId     int              `json:"serviceId"`
+	Date          string           `json:"date"`
+	ExceptionType ServiceAvailability `json:"exceptionType"`
 }

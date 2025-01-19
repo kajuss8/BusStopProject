@@ -24,13 +24,13 @@ const (
 )
 
 type StopTime struct {
-	TripId        string	`json:"tripId"`
-	ArrivalTime   string	`json:"arrivalTime"`
-	DepartureTime string	`json:"departureTime"`
-	StopId        int	`json:"stopId"`
-	StopSequence  int	`json:"stopSequence"`
-	PickupType    PickupStatus	`json:"pickupType"`
-	DropOffType   DropOffStatus	`json:"dropOffType"`
+	TripId        string		`json:"tripId"`
+	ArrivalTime   string     	`json:"arrivalTime"`
+	DepartureTime string     	`json:"departureTime"`
+	StopId        int        	`json:"stopId"`
+	StopSequence  int         	`json:"stopSequence"`
+	PickupType    PickupStatus  `json:"pickupType"`
+	DropOffType   DropOffStatus `json:"dropOffType"`
 }
 
 const stopTimeFilePath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder/stop_times.txt"
