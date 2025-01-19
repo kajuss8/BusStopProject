@@ -17,13 +17,24 @@ func getArriveTimes(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"arrive times": arriveTimes})
 }
 
-func getAllStopTimes(ctx *gin.Context) {
-	stopTimes, err := models.GetAllStopTimes()
+func getStopById(ctx *gin.Context) {
+	id := ctx.Param("id")
+	stop, err := models.GetStopById(id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stop not found"})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"stopTimes": stopTimes})
+	ctx.JSON(http.StatusOK, gin.H{"stop": stop})
+}
+
+func getStopTimesById(ctx *gin.Context) {
+	id := ctx.Param("id")
+	stopTimes, err := models.GetStopTimesByStopId(id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "stop not found"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"stop Times": stopTimes})
 }
 
 func main() {
@@ -31,7 +42,8 @@ func main() {
 	handleFiles.ProcessGtfs()
 
 	router := gin.Default()
-	router.GET("/stopTimes", getAllStopTimes)
-	router.GET("/stopTimes/:id", getArriveTimes)
+	router.GET("/stopTimesById/:id", getStopTimesById)
+	router.GET("/arriveTimes/:id", getArriveTimes)
+	router.GET("/stop/:id", getStopById)
 	router.Run()
 }

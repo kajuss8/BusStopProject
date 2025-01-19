@@ -2,8 +2,9 @@ package models
 
 import (
 	"busProject/src/handleFiles"
-	"strconv"
 	"errors"
+	"strconv"
+	"strings"
 )
 
 type PickupStatus uint8
@@ -28,7 +29,7 @@ type StopTime struct {
 	TripId        string		`json:"tripId"`
 	ArrivalTime   string     	`json:"arrivalTime"`
 	DepartureTime string     	`json:"departureTime"`
-	StopId        string        	`json:"stopId"`
+	StopId        string        `json:"stopId"`
 	StopSequence  int         	`json:"stopSequence"`
 	PickupType    PickupStatus  `json:"pickupType"`
 	DropOffType   DropOffStatus `json:"dropOffType"`
@@ -37,23 +38,22 @@ type StopTime struct {
 const stopTimeFilePath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder/stop_times.txt"
 
 func GetAllStopTimes() ([]StopTime, error) {
-
-	var stopTimes []StopTime
-	arriveTimes, err := handleFiles.ReadFile(stopTimeFilePath)
+	var stopTimesResult []StopTime
+	stopTimes, err := handleFiles.ReadFile(stopTimeFilePath)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, arriveTime := range arriveTimes {
-		tripId := arriveTime[0]
-		arrivalTime := arriveTime[1]
-		departureTime := arriveTime[2]
-		stopId := arriveTime[3]
-		stopSequence, _ := strconv.Atoi(arriveTime[4])
-		pickupType, _ := strconv.Atoi(arriveTime[5])
-		dropOffType, _ := strconv.Atoi(arriveTime[6])
+	for _, stopTime := range stopTimes {
+		tripId := stopTime[0]
+		arrivalTime := stopTime[1]
+		departureTime := stopTime[2]
+		stopId := stopTime[3]
+		stopSequence, _ := strconv.Atoi(stopTime[4])
+		pickupType, _ := strconv.Atoi(stopTime[5])
+		dropOffType, _ := strconv.Atoi(stopTime[6])
 
-		stopTimes = append(stopTimes ,StopTime{
+		stopTimesResult = append(stopTimesResult ,StopTime{
 			TripId:        tripId,
 			ArrivalTime:   arrivalTime,
 			DepartureTime: departureTime,
@@ -63,7 +63,7 @@ func GetAllStopTimes() ([]StopTime, error) {
 			DropOffType:   DropOffStatus(dropOffType),
 		})
 	}
-	return stopTimes, nil
+	return stopTimesResult, nil
 }
 
 func GetStopTimesByStopId(stopId string) ([]StopTime, error){
@@ -85,16 +85,51 @@ func GetStopTimesByStopId(stopId string) ([]StopTime, error){
 	return stopTimesById, nil
 }
 
-func GetArriveTimesById(stopId string) ([]string, error) {
+type ArriveTime struct {
+	BusType string
+	BusNumber string
+	ArrivalTime []string
+}
+
+func GetBusTypeAndNumber(tripId string) (busType string, busNumber string) {
+	index := strings.Index(tripId, "-")
+	if index != -1 {
+		substring := tripId[:index]
+		busType := string(substring[0])
+		busNumber := substring[1:]
+		return busType, busNumber
+	}
+	return "", ""
+}
+
+func GetArriveTimesById(stopId string) ([]ArriveTime, error) {
 	stopTimesById, err := GetStopTimesByStopId(stopId)
 	if err != nil {
 		return nil, err
 	}
 
-	var arriveTimes []string
-	for _, arriveTime := range stopTimesById {
-		arriveTimes = append(arriveTimes, arriveTime.ArrivalTime)
+	arriveTimeMap := make(map[string]ArriveTime)
+
+	for _, stopTime := range stopTimesById {
+		busType, busNumber := GetBusTypeAndNumber(stopTime.TripId)
+		key := busType + busNumber
+
+		if at, exists := arriveTimeMap[key]; exists {
+			at.ArrivalTime = append(at.ArrivalTime, stopTime.ArrivalTime)
+			arriveTimeMap[key] = at
+		} else {
+			arriveTimeMap[key] = ArriveTime{
+				BusType:    busType,
+				BusNumber:  busNumber,
+				ArrivalTime: []string{stopTime.ArrivalTime},
+			}
+		}
 	}
 
-	return arriveTimes, nil
+	var arrivalTime []ArriveTime
+	for _, at := range arriveTimeMap {
+		arrivalTime = append(arrivalTime, at)
+	}
+
+	return arrivalTime, nil
 }
