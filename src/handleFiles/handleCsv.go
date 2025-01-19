@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func ReadFromCsvAllWithSameId(filePath, columnName, id string) [][]string {
+func ReadFromCsvAllWithSameId(filePath, columnName, id string) ([][]string, error) {
 	
 	var result [][]string
 	
@@ -33,7 +33,6 @@ func ReadFromCsvAllWithSameId(filePath, columnName, id string) [][]string {
 			break
 		}
 	}
-
 	if columnIndex == -1 {
 		log.Fatalf("Column %s not found", columnName)
 	}
@@ -41,17 +40,17 @@ func ReadFromCsvAllWithSameId(filePath, columnName, id string) [][]string {
 	for {
 		record, err := reader.Read()
 		if err != nil {
-			if err.Error() == "EOF" {
+			if err.Error() == "EOF" && result == nil {
+				return result, err
+			}else{
 				break
 			}
-			log.Fatal(err)
 		}
-
 		if record[columnIndex] == id {
 			result = append(result, record)
 		}
 	}
 
-	return result
+	return result, nil
 }
 

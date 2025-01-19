@@ -1,6 +1,7 @@
 package main
 
 import (
+	"busProject/src/handleFiles"
 	"busProject/src/models"
 	"net/http"
 
@@ -13,28 +14,21 @@ import (
 // "github.com/gin-gonic/gin"
 // "busProject/src/handleFiles"
 
+func getStopTimesByStopId(ctx *gin.Context) {
+	id := ctx.Param("id")
+	stopTimes, err := models.GetAllArriveTimesByStopId(id)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stop not found"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"stopTimes": stopTimes})
+}
+
 func main() {
 
-	// err := handleFiles.DownloadGtfs()
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// err = handleFiles.Unzip()
-	// if err != nil {
-	// 	panic(err)
-	// }
+	handleFiles.ProcessGtfs()
 
 	router := gin.Default()
-	router.GET("/stopTimeByStopId/:id", func(ctx *gin.Context) {
-		id := ctx.Param("id")
-		stopTimes, err := models.GetAllArriveTimesByStopId(id)
-		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		}
-		ctx.JSON(http.StatusOK, gin.H{"stopTimes": stopTimes})	
-	})
-
+	router.GET("/stopTimes/:id", getStopTimesByStopId)
 	router.Run()
 }

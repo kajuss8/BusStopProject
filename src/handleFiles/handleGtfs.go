@@ -6,14 +6,25 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-
 )
 
 const gtfsUrlPath = "http://www.stops.lt/kaunas/kaunas/gtfs.zip"
 const gtfsFolderPath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder/gtfs.zip"
 const destination = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder"
 
-func DownloadGtfs()  error {
+func ProcessGtfs() error {
+	err := downloadGtfs()
+	if err != nil {
+		return err
+	}
+	err = unzip()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func downloadGtfs() error {
 	out, err := os.Create(gtfsFolderPath)
 	if err != nil {
 		return err
@@ -25,7 +36,7 @@ func DownloadGtfs()  error {
 		return err
 	}
 	defer resp.Body.Close()
-	
+
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
 		return err
@@ -34,13 +45,13 @@ func DownloadGtfs()  error {
 	return nil
 }
 
-func Unzip() error {
+func unzip() error {
 	archive, err := zip.OpenReader(gtfsFolderPath)
 	if err != nil {
 		return err
 	}
 	defer archive.Close()
-	
+
 	for _, file := range archive.Reader.File {
 		reader, err := file.Open()
 		if err != nil {

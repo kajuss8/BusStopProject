@@ -39,8 +39,11 @@ const stopIdColumnName = "stop_id"
 func GetAllArriveTimesByStopId(stopId string) ([]StopTime, error) {
 
 	var stopTimes []StopTime
-	arriveTimes := handleFiles.ReadFromCsvAllWithSameId(stopTimeFilePath, stopIdColumnName, stopId)
-	
+	arriveTimes, err := handleFiles.ReadFromCsvAllWithSameId(stopTimeFilePath, stopIdColumnName, stopId)
+	if err != nil {
+		return nil, err
+	}
+
 	for _, arriveTime := range arriveTimes {
 		tripId := arriveTime[0]
 		arrivalTime := arriveTime[1]
