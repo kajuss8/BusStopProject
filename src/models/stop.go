@@ -11,7 +11,7 @@ const (
 )
 
 type Stop struct {
-	Id            int		`json:"id"`
+	Id            int		    `json:"id"`
 	StopId        string		`json:"stopId"`
 	StopCode      string		`json:"stopCode"`
 	StopName      string		`json:"stopName"`
@@ -20,7 +20,7 @@ type Stop struct {
 	StopLon       float32		`json:"stopLon"`
 	StopUrl       string		`json:"stopUrl"`
 	LocationType  LocationCategory	`json:"locationType"`
-	ParentStation int		`json:"parentStation"`
+	ParentStation int		    `json:"parentStation"`
 }
 
 func CreateStops() []Stop {
