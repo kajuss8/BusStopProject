@@ -77,3 +77,12 @@ func GetStopById(stopId string) (Stop, error) {
 	}
 	return Stop{}, errors.New("Stop not found")
 }
+
+func GetStopName(stopId string) (string, error) {
+	stop, err := GetStopById(stopId)
+	if err != nil {
+		return "", err
+	}
+
+	return stop.StopName, nil
+}

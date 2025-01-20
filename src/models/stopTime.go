@@ -85,6 +85,38 @@ func GetStopTimesByStopId(stopId string) ([]StopTime, error){
 	return stopTimesById, nil
 }
 
+func GetArrivalTimes(stopId string) ([]string, error) {
+	stopTimes, err := GetStopTimesByStopId(stopId)
+	if err != nil {
+		return nil, err
+	}
+
+	var arrivalTimes []string
+	for _, stopTime := range stopTimes {
+		arrivalTimes = append(arrivalTimes, stopTime.ArrivalTime)
+	}
+
+	return arrivalTimes, nil
+}
+
+func GetTripId(stopId string) ([]string, error) {
+	stopTimes, err := GetStopTimesByStopId(stopId)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(stopTimes) == 0 {
+		return nil, errors.New("Stop not found")
+	}
+
+	var tripIds []string
+	for _, stopTime := range stopTimes {
+		tripIds = append(tripIds, stopTime.TripId)
+	}
+
+	return tripIds, nil
+}
+
 type ArriveTime struct {
 	BusType string
 	BusNumber string
