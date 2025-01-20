@@ -4,70 +4,36 @@ import (
 	"busProject/src/handleFiles"
 	"busProject/src/models"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func getTransportArrivalTimes(ctx *gin.Context) {
+func getRoutes(ctx *gin.Context) {
 	id := ctx.Param("id")
-	arriveTimes, err := models.GetArrivalTimes(id)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stop not found"})
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{"arrival times": arriveTimes})
+	trips, _ := models.GetAllTrips()
+	stopTime, _ := models.GetStopTimesByStopId(id)
+	tripIds := models.GetTripIds(stopTime)
+	routeIds := models.GetTripsByIds(tripIds, trips)
+	// if err != nil {
+	// 	ctx.JSON(http.StatusNotFound, gin.H{"error": "Stop not found"})
+	// 	return
+	// }
+	ctx.JSON(http.StatusOK, gin.H{"arrival times": routeIds})
 }
 
-func getStopById(ctx *gin.Context) {
+func getDifferentRouts(ctx *gin.Context) {
 	id := ctx.Param("id")
-	stop, err := models.GetStopById(id)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stop not found"})
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{"stop": stop})
-}
+	trips, _ := models.GetAllTrips()
+	stopTime, _ := models.GetStopTimesByStopId(id)
+	tripIds := models.GetTripIds(stopTime)
+	routeIds := models.GetTripsByIds(tripIds, trips)
+	routeonlyIds := models.GetRouteIds(routeIds)
 
-func getStopTimesById(ctx *gin.Context) {
-	id := ctx.Param("id")
-	stopTimes, err := models.GetStopTimesByStopId(id)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "stop not found"})
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{"stop Times": stopTimes})
-}
+	routs, _ := models.GetAllRoutes()
 
-func getStopName(ctx *gin.Context) {
-	id := ctx.Param("id")
-	stopTimes, err := models.GetStopName(id)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "stop not found"})
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{"stop name": stopTimes})
-}
+	diffRouts := models.GetDifferentRouts(routeonlyIds, routs)
+	ctx.JSON(http.StatusOK, gin.H{"arrival times": diffRouts})
 
-func getTripId(ctx *gin.Context) {
-	id := ctx.Param("id")
-	tripId, err := models.GetTripId(id)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stop not found"})
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{"tripId": tripId})
-}
-
-func getWeekWorkDays(ctx *gin.Context){
-	id := ctx.Param("id")
-	tempId, _ := strconv.Atoi(id)
-	tripId, err := models.GetCalendarWorkDays(tempId)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "No such service ID"})
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{"Wrok days": tripId})
 }
 
 func main() {
@@ -75,11 +41,8 @@ func main() {
 	handleFiles.ProcessGtfs()
 
 	router := gin.Default()
-	router.GET("/tripId/:id", getTripId)
-	router.GET("/stopsName/:id", getStopName)
-	router.GET("/stopTimesById/:id", getStopTimesById)
-	router.GET("/arrivalTimes/:id", getTransportArrivalTimes)
-	router.GET("/stop/:id", getStopById)
-	router.GET("/WorkDays/:id", getWeekWorkDays)
+	//router.GET("/StopSchedle/:id", getStopSchedule)
+	router.GET("/RouteIds/:id", getRoutes)
+	router.GET("/differentRouts/:id", getDifferentRouts)
 	router.Run()
 }

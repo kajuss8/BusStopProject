@@ -72,11 +72,6 @@ func GetCalendarById(serviceId int) (Calendar, error) {
 	return Calendar{}, nil
 }
 
-func GetCalendarWorkDays(serviceId int) (map[string]DayServiceAvailability, error) {
-	calendar, err := GetCalendarById(serviceId)
-	if err != nil{
-		return nil, err
-	}
-
-	return calendar.WeekDaysService, nil
+func GetCalendarWorkDays(calendar Calendar) map[string]DayServiceAvailability {
+	return calendar.WeekDaysService
 }

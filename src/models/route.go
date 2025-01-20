@@ -82,29 +82,27 @@ func GetRouteById(routeId string) (Route, error) {
     return Route{}, nil
 }
 
-func GetRouteShortName(routeId string) (string, error) {
-    route, err := GetRouteById(routeId)
-    if err != nil {
-        return "", err
+func GetDifferentRouts(routeIds []string, routs []Route) []Route {
+    startIndex := 0
+    var routesResult []Route
+    for _, route := range routs {
+        for i := startIndex; i < len(routeIds); i++{
+            if route.RouteId == routeIds[0]{
+                routesResult = append(routesResult, route)
+            }
+        }
     }
-
-    return route.RouteShortName, nil
+    return routesResult
 }
 
-func GetRouteLongName(routeId string) (string, error) {
-    route, err := GetRouteById(routeId)
-    if err != nil {
-        return "", err
-    }
-
-    return route.RouteLongName, nil
+func GetRouteShortName(route Route) string {
+    return route.RouteShortName
 }
 
-func GetRouteByIdType(routeId string) (TransportType, error) {
-    route, err := GetRouteById(routeId)
-    if err != nil {
-        return 0, err
-    }
+func GetRouteLongName(route Route) string {
+    return route.RouteLongName
+}
 
-    return route.RouteType, nil
+func GetRouteTypeById(route Route) TransportType {
+    return route.RouteType
 }

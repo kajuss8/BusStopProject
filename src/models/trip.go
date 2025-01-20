@@ -83,38 +83,40 @@ func GetTripById(tripId string) (Trip, error) {
 	return Trip{}, errors.New("Trip not found")
 }
 
-func GetRouteId(tripId string) (string, error) {
-	trip, err := GetTripById(tripId)
-	if err != nil {
-		return "", err
-	}
-
-	return trip.RouteId, nil
+func GetRouteId(trip Trip) (string) {
+	return trip.RouteId
 }
 
-func GetServiceId(tripId string) (int, error) {
-	trip, err := GetTripById(tripId)
-	if err != nil {
-		return 0, err
+func GetTripsByIds(tripIds []string, trips []Trip) []Trip  {
+	startIndex := 0
+	var routeIdsResult []Trip
+	for _, tripId := range tripIds{
+		for i := startIndex; i < len(trips); i++{
+			if tripId == trips[i].TripId{
+				routeIdsResult = append(routeIdsResult, trips[i])
+				startIndex = i
+			}
+		}
 	}
-
-	return trip.ServiceId, nil
+	return routeIdsResult
 }
 
-func GetTripHeadsign(tripId string) (string, error){
-	trip, err := GetTripById(tripId)
-	if err != nil {
-		return "", err
+func GetRouteIds(trips []Trip) []string {
+	var routeIds []string
+	for _, trip := range trips {
+		routeIds = append(routeIds, trip.RouteId)
 	}
-
-	return trip.TripHeadsign, nil
+	return routeIds
 }
 
-func GetDirection(tripId string) (Direction, error){
-	trip, err := GetTripById(tripId)
-	if err != nil {
-		return 0, err
-	}
+func GetServiceId(trip Trip) int {
+	return trip.ServiceId
+}
 
-	return trip.DirectionId, err
+func GetTripHeadsign(trip Trip) string {
+	return trip.TripHeadsign
+}
+
+func GetDirection(trip Trip) Direction {
+	return trip.DirectionId
 }
