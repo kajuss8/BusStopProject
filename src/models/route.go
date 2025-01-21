@@ -87,12 +87,38 @@ func GetDifferentRouts(routeIds []string, routs []Route) []Route {
     var routesResult []Route
     for _, route := range routs {
         for i := startIndex; i < len(routeIds); i++{
-            if route.RouteId == routeIds[0]{
+            if route.RouteId == routeIds[i]{
                 routesResult = append(routesResult, route)
+				startIndex = i
+				break
             }
         }
     }
     return routesResult
+}
+
+func GetRouteIds(routes []Route) []string {
+	var result []string
+	for _, route := range routes{
+		result = append(result, route.RouteId)
+	}
+
+	return result
+}
+
+func GetRoutesShortAndLongName(routeIds []string, routes []Route) (shortName []string, longName []string) {
+	var sName []string
+	var lName []string
+    for _, routeId := range routeIds {
+        for _, route := range routes{
+            if route.RouteId == routeId{
+                sName = append(sName, route.RouteShortName)
+				lName = append(lName, route.RouteLongName)
+				break
+            }
+        }
+    }
+    return sName, lName
 }
 
 func GetRouteShortName(route Route) string {
