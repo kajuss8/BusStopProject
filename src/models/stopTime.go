@@ -100,15 +100,27 @@ func GetTripIds(stopTimes []StopTime) []string {
 	return tripIds
 }
 
-func GetSingleTripId(stopTimes []StopTime) string {
-	return stopTimes[0].TripId
-}
-
 func GetSequence(stopTimes []StopTime) []int {
 	var sequences []int
 	for _, stopTime := range stopTimes {
 		sequences = append(sequences, stopTime.StopSequence)
 	}
-
 	return sequences
+}
+
+func ConvertTripIdToStopTimesArrivalTime(mappedTrip [][]Trip, stopTimesByStopId []StopTime) (arrivalTimes [][]string) {
+	var arrTimes [][]string
+    for _, trips := range mappedTrip {
+		var times []string
+        for _, trip := range trips {
+            for _, stopTime := range stopTimesByStopId {
+                if trip.TripId == stopTime.TripId {
+                    times = append(times, stopTime.ArrivalTime)
+					break
+                }
+            }
+        }
+		arrTimes = append(arrTimes, times)
+    }
+    return arrTimes
 }

@@ -106,9 +106,11 @@ func GetRouteIds(routes []Route) []string {
 	return result
 }
 
-func GetRoutesShortAndLongName(routeIds []string, routes []Route) (shortName []string, longName []string) {
+func ConvertTripIdToRoutesShortAndLongName(routeIds []string) (shortName []string, longName []string) {
 	var sName []string
 	var lName []string
+	routes, _ := GetAllRoutes()
+	
     for _, routeId := range routeIds {
         for _, route := range routes{
             if route.RouteId == routeId{

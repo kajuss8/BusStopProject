@@ -1,28 +1,29 @@
 package models
 
+
+
 type StopSchedule struct {
-StopName			string           	`json:"stopName"`
-StopInformations 	[]StopInformation	`json:"stopInformation"`
+	StopName         string            `json:"stopName"`
+	StopInformations []StopInformation `json:"stopInformation"`
 }
 
-type StopInformation struct{
-	RouteShortName		string		`json:"routeShortName"`
-	RouteLongName 		string		`json:"routeLongName"`
-	// RouteType			models.TransportType `json:"routeType"`
-	// ArrivalTime 		[]string	`json:"arrivalTimes"`
+type StopInformation struct {
+	RouteShortName string `json:"routeShortName"`
+	RouteLongName  string `json:"routeLongName"`
+	//RouteType			TransportType `json:"routeType"`
+	ArrivalTime []string `json:"arrivalTimes"`
 	// CalendarWorkDays	map[string]models.DayServiceAvailability `json:"caleendarWorkDays"`
 }
-
 
 func CreateStopSchedule(stopName string, stopInfo []StopInformation) {
 
 }
 
-func CreateStopInformation(routeShortName string, routeLongName string, routeType string, arrivalTimes []string, calendarWorkDays map[string]DayServiceAvailability){
-	
+func CreateStopInformation(routeShortName string, routeLongName string, routeType string, arrivalTimes []string, calendarWorkDays map[string]DayServiceAvailability) {
+
 }
 
-func CreateStopsSchedule(stopId string) (StopSchedule, error){
+func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 	stop, err := createStop(stopId)
 	if err != nil {
 		return StopSchedule{}, err
@@ -38,34 +39,46 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error){
 	if err != nil {
 		return StopSchedule{}, err
 	}
-	tripRouteIds := GetMapTripsShapeRouteId(trips)
+	mappedTripShape := MapTripsShapeId(trips)
+	//keys := make([]string, 0, len(mappedTripShape))
+	// values := make([][]Trip, 0, len(mappedTripShape))
 
-	routes, err := createRouts()
-	if err != nil{
-		return StopSchedule{}, err
-	}
-	sName, lName := GetRoutesShortAndLongName(tripRouteIds, routes)
+	// for _, value := range mappedTripShape {
+	// 	//keys = append(keys, key)
+	// 	values = append(values, value)
+	// }
+
+	arrivalTimes := ConvertTripIdToStopTimesArrivalTime(mappedTripShape, stopTimes)
+
+	tripRouteIds := GetMapTripsShapeRouteId(mappedTripShape)
+	//maptripId := GetMapTripsShapeTripIds(mappedTripShape)
+
+	sName, lName := ConvertTripIdToRoutesShortAndLongName(tripRouteIds)
 
 	var stopSchedule StopSchedule
 	stopSchedule.StopName = GetStopName(stop)
 	for i := 0; i < len(lName); i++ {
 		info := struct {
-			RouteShortName string 	`json:"routeShortName"`
-			RouteLongName  string	`json:"routeLongName"`
+			RouteShortName string   `json:"routeShortName"`
+			RouteLongName  string   `json:"routeLongName"`
+			ArrivalTime    []string `json:"arrivalTimes"`
 		}{
-			RouteLongName: lName[i],
+			RouteLongName:  lName[i],
 			RouteShortName: sName[i],
+			ArrivalTime:    arrivalTimes[i],
 		}
 		stopSchedule.StopInformations = append(stopSchedule.StopInformations, info)
 	}
+	// sort.Slice(stopSchedule.StopInformations, func(i, j int) bool {
+	// 	return stopSchedule.StopInformations[i].RouteShortName < stopSchedule.StopInformations[j].RouteShortName
+	// })
 
-	
 	return stopSchedule, nil
 }
 
 func createStop(stopId string) (Stop, error) {
 	stop, err := GetStopById(stopId)
-	if err != nil{
+	if err != nil {
 		return stop, err
 	}
 
@@ -74,8 +87,8 @@ func createStop(stopId string) (Stop, error) {
 
 func createStopTimes(stopId string) ([]StopTime, error) {
 	stopTimes, err := GetStopTimesByStopId(stopId)
-	if err != nil{
-		return nil , err
+	if err != nil {
+		return nil, err
 	}
 	return stopTimes, nil
 }
@@ -85,7 +98,7 @@ func takeStopTimeTripIds(stopTimes []StopTime) (tripIds []string) {
 	return trips
 }
 
-func createTrips() ([]Trip, error){
+func createTrips() ([]Trip, error) {
 	return GetAllTrips()
 }
 
@@ -97,13 +110,4 @@ func createTripsByStopTimeTripIds(tripIds []string) ([]Trip, error) {
 
 	tripsByIds := GetTripsByIds(tripIds, Trips)
 	return tripsByIds, nil
-}
-
-func createRouts() ([]Route, error) {
-	routes, err := GetAllRoutes()
-	if err != nil {
-		return nil, err
-	}
-
-	return routes, nil
 }

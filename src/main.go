@@ -35,16 +35,17 @@ func getDifferentRouts(ctx *gin.Context) {
 
 }
 
-func getRouteIds(ctx *gin.Context) {
-	id := ctx.Param("id")
-	trips, _ := models.GetAllTrips()
-	stopTime, _ := models.GetStopTimesByStopId(id)
-	tripIds := models.GetTripIds(stopTime)
-	tripsById := models.GetTripsByIds(tripIds, trips)
+// func getRouteIds(ctx *gin.Context) {
+// 	id := ctx.Param("id")
+// 	trips, _ := models.GetAllTrips()
+// 	stopTime, _ := models.GetStopTimesByStopId(id)
+// 	tripIds := models.GetTripIds(stopTime)
+// 	tripsById := models.GetTripsByIds(tripIds, trips)
+// 	shapeMap := models.MapTripsShapeId(tripsById)
 
-	routeIds := models.GetMapTripsShapeRouteId(tripsById)
-	ctx.JSON(http.StatusOK, gin.H{"Routes": routeIds})
-}
+// 	routeIds := models.GetMapTripsShapeRouteId(shapeMap)
+// 	ctx.JSON(http.StatusOK, gin.H{"Routes": routeIds})
+// }
 
 func getStopSchedule(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -56,14 +57,27 @@ func getStopSchedule(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"Stop schedule": schedule})
 }
 
+func getMapShapeId(ctx *gin.Context) {
+	id := ctx.Param("id")
+	trips, _ := models.GetAllTrips()
+	stopTime, _ := models.GetStopTimesByStopId(id)
+	tripIds := models.GetTripIds(stopTime)
+	tripsById := models.GetTripsByIds(tripIds, trips)
+
+	shapeMap := models.MapTripsShapeId(tripsById)
+	
+	ctx.JSON(http.StatusOK, gin.H{"Stop schedule": shapeMap})
+}
+
 func main() {
 
 	handleFiles.ProcessGtfs()
 
 	router := gin.Default()
+	router.GET("/MapShapeId/:id", getMapShapeId)
 	router.GET("/StopSchedle/:id", getStopSchedule)
 	router.GET("/RouteIds/:id", getRoutes)
 	router.GET("/differentRouts/:id", getDifferentRouts)
-	router.GET("/routtes/:id", getRouteIds)
+	//router.GET("/routtes/:id", getRouteIds)
 	router.Run()
 }

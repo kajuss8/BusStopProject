@@ -101,19 +101,53 @@ func GetTripsByIds(StopTimetripIds []string, trips []Trip) []Trip  {
 	return routeIdsResult
 }
 
-func mapTripsShapeId(trips []Trip) map[string][]Trip {
-	shapeIdMap := make(map[string][]Trip)
+func MapTripsShapeId(trips []Trip) [][]Trip {
+	//shapeIdMap := make(map[string][]Trip)
 
+	var groupedTrips [][]Trip
 	for _, trip := range trips {
-		shapeIdMap[trip.ShapeId] = append(shapeIdMap[trip.ShapeId], trip)
+		found := false
+		for i := range groupedTrips {
+			if groupedTrips[i][0].ShapeId == trip.ShapeId {
+				groupedTrips[i] = append(groupedTrips[i], trip)
+				found = true
+				break
+			}
+		}
+		if !found {
+			groupedTrips = append(groupedTrips, []Trip{trip})
+		}
 	}
+	// for _, trip := range trips {
+	// 	shapeIdMap[trip.ShapeId] = append(shapeIdMap[trip.ShapeId], trip)
+	// }
 
-	return shapeIdMap
+	return groupedTrips
 }
 
-func GetMapTripsShapeRouteId(trips []Trip) []string {
-	shapeIdsMap := mapTripsShapeId(trips)
+func GetMapTripsShapeTripIds(shapeIdsMap map[string][]Trip) []string {
+	var result []string
+	for _, value := range shapeIdsMap{
+		for _, v := range value {
+			result = append(result, v.TripId)
+			break
+		}
+	}
+	return result
+}
 
+func GetMapTripsShapeServiceIds(shapeIdsMap map[string][]Trip) []int {
+	var result []int
+	for _, value := range shapeIdsMap{
+		for _, v := range value {
+			result = append(result, v.ServiceId)
+			break
+		}
+	}
+	return result
+}
+
+func GetMapTripsShapeRouteId(shapeIdsMap [][]Trip) []string {
 	var result []string
 	for _, value := range shapeIdsMap{
 		for _, v := range value {
