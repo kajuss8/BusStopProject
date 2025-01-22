@@ -35,18 +35,6 @@ func getDifferentRouts(ctx *gin.Context) {
 
 }
 
-// func getRouteIds(ctx *gin.Context) {
-// 	id := ctx.Param("id")
-// 	trips, _ := models.GetAllTrips()
-// 	stopTime, _ := models.GetStopTimesByStopId(id)
-// 	tripIds := models.GetTripIds(stopTime)
-// 	tripsById := models.GetTripsByIds(tripIds, trips)
-// 	shapeMap := models.MapTripsShapeId(tripsById)
-
-// 	routeIds := models.GetMapTripsShapeRouteId(shapeMap)
-// 	ctx.JSON(http.StatusOK, gin.H{"Routes": routeIds})
-// }
-
 func getStopSchedule(ctx *gin.Context) {
 	id := ctx.Param("id")
 	schedule, err := models.CreateStopsSchedule(id)

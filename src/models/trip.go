@@ -87,7 +87,7 @@ func GetRouteId(trip Trip) (string) {
 	return trip.RouteId
 }
 
-func GetTripsByIds(StopTimetripIds []string, trips []Trip) []Trip  {
+func GetTripsByIds(StopTimetripIds []string, trips []Trip) []Trip {
 	startIndex := 0
 	var routeIdsResult []Trip
 	for _, tripId := range StopTimetripIds{
@@ -102,13 +102,11 @@ func GetTripsByIds(StopTimetripIds []string, trips []Trip) []Trip  {
 }
 
 func MapTripsShapeId(trips []Trip) [][]Trip {
-	//shapeIdMap := make(map[string][]Trip)
-
 	var groupedTrips [][]Trip
 	for _, trip := range trips {
 		found := false
 		for i := range groupedTrips {
-			if groupedTrips[i][0].ShapeId == trip.ShapeId {
+			if groupedTrips[i][0].ShapeId == trip.ShapeId && groupedTrips[i][0].ServiceId == trip.ServiceId {
 				groupedTrips[i] = append(groupedTrips[i], trip)
 				found = true
 				break
@@ -118,25 +116,21 @@ func MapTripsShapeId(trips []Trip) [][]Trip {
 			groupedTrips = append(groupedTrips, []Trip{trip})
 		}
 	}
-	// for _, trip := range trips {
-	// 	shapeIdMap[trip.ShapeId] = append(shapeIdMap[trip.ShapeId], trip)
-	// }
-
 	return groupedTrips
 }
 
-func GetMapTripsShapeTripIds(shapeIdsMap map[string][]Trip) []string {
-	var result []string
-	for _, value := range shapeIdsMap{
+func GetMapTripsShapeTripIds(shapeIds [][]Trip) ([]string) {
+	var tripIdResult []string
+	for _, value := range shapeIds{
 		for _, v := range value {
-			result = append(result, v.TripId)
+			tripIdResult = append(tripIdResult, v.TripId)
 			break
 		}
 	}
-	return result
+	return tripIdResult
 }
 
-func GetMapTripsShapeServiceIds(shapeIdsMap map[string][]Trip) []int {
+func GetMapTripsShapeServiceIds(shapeIdsMap [][]Trip) []int {
 	var result []int
 	for _, value := range shapeIdsMap{
 		for _, v := range value {
@@ -147,15 +141,17 @@ func GetMapTripsShapeServiceIds(shapeIdsMap map[string][]Trip) []int {
 	return result
 }
 
-func GetMapTripsShapeRouteId(shapeIdsMap [][]Trip) []string {
+func GetMapTripsShapeRouteId(shapeIdsMap [][]Trip) ([]string, []Direction) {
 	var result []string
+	var directionResult []Direction
 	for _, value := range shapeIdsMap{
 		for _, v := range value {
 			result = append(result, v.RouteId)
+			directionResult = append(directionResult, v.DirectionId)
 			break
 		}
 	}
-	return result
+	return result, directionResult
 }
 
 func GetTripRouteIds(trips []Trip) []string {

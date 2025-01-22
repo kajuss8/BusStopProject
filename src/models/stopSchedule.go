@@ -1,7 +1,5 @@
 package models
 
-
-
 type StopSchedule struct {
 	StopName         string            `json:"stopName"`
 	StopInformations []StopInformation `json:"stopInformation"`
@@ -40,24 +38,17 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 		return StopSchedule{}, err
 	}
 	mappedTripShape := MapTripsShapeId(trips)
-	//keys := make([]string, 0, len(mappedTripShape))
-	// values := make([][]Trip, 0, len(mappedTripShape))
 
-	// for _, value := range mappedTripShape {
-	// 	//keys = append(keys, key)
-	// 	values = append(values, value)
-	// }
-
-	arrivalTimes := ConvertTripIdToStopTimesArrivalTime(mappedTripShape, stopTimes)
-
-	tripRouteIds := GetMapTripsShapeRouteId(mappedTripShape)
+	tripRouteIds, _ := GetMapTripsShapeRouteId(mappedTripShape)
 	//maptripId := GetMapTripsShapeTripIds(mappedTripShape)
 
+
 	sName, lName := ConvertTripIdToRoutesShortAndLongName(tripRouteIds)
+	arrivalTimes := ConvertTripIdToStopTimesArrivalTime(mappedTripShape, stopTimes)
 
 	var stopSchedule StopSchedule
 	stopSchedule.StopName = GetStopName(stop)
-	for i := 0; i < len(lName); i++ {
+	for i := 0; i < len(mappedTripShape); i++ {
 		info := struct {
 			RouteShortName string   `json:"routeShortName"`
 			RouteLongName  string   `json:"routeLongName"`
@@ -69,10 +60,6 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 		}
 		stopSchedule.StopInformations = append(stopSchedule.StopInformations, info)
 	}
-	// sort.Slice(stopSchedule.StopInformations, func(i, j int) bool {
-	// 	return stopSchedule.StopInformations[i].RouteShortName < stopSchedule.StopInformations[j].RouteShortName
-	// })
-
 	return stopSchedule, nil
 }
 
