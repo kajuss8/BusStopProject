@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-type DayServiceAvailability uint8
+type DayServiceAvailability int
 
 const (
 	ServiceAvailable    DayServiceAvailability = 1
@@ -13,10 +13,10 @@ const (
 )
 
 type Calendar struct {
-	ServiceId       int                            `json:"serviceId"`
-	WeekDaysService map[string]DayServiceAvailability `json:"weekServices"`
-	StartDate       string                         `json:"startDate"`
-	EndDate         string                        `json:"endDate"`
+	ServiceId       int			`json:"serviceId"`
+	WeekDaysService []int		`json:"weekServices"`
+	StartDate       string		`json:"startDate"`
+	EndDate         string		`json:"endDate"`
 }
 
 const CalendarFilePath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder/calendar.txt"
@@ -42,15 +42,14 @@ func GetAllCalendars() ([]Calendar, error) {
 
 		calendarsResult = append(calendarsResult, Calendar{
 			ServiceId: serviceId,
-			WeekDaysService: map[string]DayServiceAvailability{
-				"monday":    DayServiceAvailability(monday),
-				"tuesday":   DayServiceAvailability(tuesday),
-				"wednesday": DayServiceAvailability(wednesday),
-				"thursday":  DayServiceAvailability(thursday),
-				"friday":    DayServiceAvailability(friday),
-				"saturday":  DayServiceAvailability(saturday),
-				"sunday":    DayServiceAvailability(sunday),
-			},
+			WeekDaysService: []int{
+				monday,
+				tuesday,
+				wednesday,
+				thursday,
+				friday,
+				saturday,
+				sunday},
 			StartDate: startDate,
 			EndDate:   endDate,
 		})
@@ -58,20 +57,33 @@ func GetAllCalendars() ([]Calendar, error) {
 	return calendarsResult, nil
 }
 
-func GetCalendarById(serviceId int) (Calendar, error) {
+func ConvertServiceIdToCalendarDays(serviceIds []int) [][]int{
+	calendars, _ := GetAllCalendars()
+
+	var result [][]int
+	for _, serviceId := range serviceIds {
+		for _, calendar := range calendars {
+			if serviceId == calendar.ServiceId{
+				result = append(result, calendar.WeekDaysService)
+				break
+			}
+		}
+	}
+	return result
+}
+
+func GetCalendarById(serviceIds []int) (Calendar, error) {
 	calendars, err := GetAllCalendars()
 	if err != nil {
 		return Calendar{}, err
 	}
 
 	for _, calendar := range calendars {
-		if calendar.ServiceId == serviceId {
-			return calendar, nil
+		for _, id := range serviceIds {
+			if calendar.ServiceId == id {
+				return calendar, nil
+			}
 		}
 	}
 	return Calendar{}, nil
-}
-
-func GetCalendarWorkDays(calendar Calendar) map[string]DayServiceAvailability {
-	return calendar.WeekDaysService
 }

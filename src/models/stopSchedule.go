@@ -6,11 +6,12 @@ type StopSchedule struct {
 }
 
 type StopInformation struct {
-	RouteShortName string `json:"routeShortName"`
-	RouteLongName  string `json:"routeLongName"`
+	RouteShortName 		string `json:"routeShortName"`
+	RouteLongName  		string `json:"routeLongName"`
 	//RouteType			TransportType `json:"routeType"`
-	ArrivalTime []string `json:"arrivalTimes"`
-	// CalendarWorkDays	map[string]models.DayServiceAvailability `json:"caleendarWorkDays"`
+	CalendarWorkDays	[]int 	`json:"calendarWorkDays"`
+	ArrivalTime 		[]string `json:"arrivalTimes"`
+	
 }
 
 func CreateStopSchedule(stopName string, stopInfo []StopInformation) {
@@ -40,22 +41,25 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 	mappedTripShape := MapTripsShapeId(trips)
 
 	tripRouteIds, _ := GetMapTripsShapeRouteId(mappedTripShape)
-	//maptripId := GetMapTripsShapeTripIds(mappedTripShape)
-
+	serviceIds := GetMapTripsShapeServiceIds(mappedTripShape)
 
 	sName, lName := ConvertTripIdToRoutesShortAndLongName(tripRouteIds)
+	calWorkDays := ConvertServiceIdToCalendarDays(serviceIds)
 	arrivalTimes := ConvertTripIdToStopTimesArrivalTime(mappedTripShape, stopTimes)
+	
 
 	var stopSchedule StopSchedule
 	stopSchedule.StopName = GetStopName(stop)
 	for i := 0; i < len(mappedTripShape); i++ {
 		info := struct {
-			RouteShortName string   `json:"routeShortName"`
-			RouteLongName  string   `json:"routeLongName"`
-			ArrivalTime    []string `json:"arrivalTimes"`
+			RouteShortName 	string   	`json:"routeShortName"`
+			RouteLongName  	string   	`json:"routeLongName"`
+			CalendarWorkDays []int 		`json:"calendarWorkDays"`
+			ArrivalTime    	[]string 	`json:"arrivalTimes"`
 		}{
 			RouteLongName:  lName[i],
 			RouteShortName: sName[i],
+			CalendarWorkDays: calWorkDays[i],
 			ArrivalTime:    arrivalTimes[i],
 		}
 		stopSchedule.StopInformations = append(stopSchedule.StopInformations, info)

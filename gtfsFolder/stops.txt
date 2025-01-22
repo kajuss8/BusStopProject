@@ -75,7 +75,7 @@
 15130,,"Vijūkų g.",,54.93792,23.83046,https://www.stops.lt/kaunas/index.html#stop/820,,
 15131,,"Vijūkų g.",,54.93795,23.83058,https://www.stops.lt/kaunas/index.html#stop/821,,
 14993,,"M. ir P. Šalčių g.",,54.94342,23.80699,https://www.stops.lt/kaunas/index.html#stop/795,,
-17508,,"M. ir P.Šalčių g.",,54.94316,23.80509,https://www.stops.lt/kaunas/index.html#stop/1141,,
+17508,,"M. ir P. Šalčių g.",,54.94316,23.80509,https://www.stops.lt/kaunas/index.html#stop/1141,,
 14994,,"Romainiškių g.",,54.94479,23.81141,https://www.stops.lt/kaunas/index.html#stop/796,,
 14995,,"Romainiškių g.",,54.94494,23.81156,https://www.stops.lt/kaunas/index.html#stop/797,,
 4378,,"Geležinkelio stotis",,54.88752,23.93370,https://www.stops.lt/kaunas/index.html#stop/237,,
