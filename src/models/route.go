@@ -39,7 +39,7 @@ func GetAllRoutes() ([]Route, error) {
 	var routesResult []Route
 	routes, err := handleFiles.ReadFile(routeFilePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("GetAllRoutes failed: %w", err)
 	}
 
 	for _, route := range routes {
@@ -111,7 +111,7 @@ func GetRouteIds(routes []Route) []string {
 func ConvertTripIdToRoutesShortAndLongName(routeIds []string) (shortName []string, longName []string, err error) {
 	routes, err := GetAllRoutes()
 	if err != nil{
-		return nil, nil, fmt.Errorf("GetAllRoutes failed: %w", err)
+		return nil, nil, err
 	}
 
 	routeMap := make(map[string]Route, len(routes))
@@ -128,16 +128,4 @@ func ConvertTripIdToRoutesShortAndLongName(routeIds []string) (shortName []strin
 		}
 	}
     return sName, lName, nil
-}
-
-func GetRouteShortName(route Route) string {
-    return route.RouteShortName
-}
-
-func GetRouteLongName(route Route) string {
-    return route.RouteLongName
-}
-
-func GetRouteTypeById(route Route) TransportType {
-    return route.RouteType
 }

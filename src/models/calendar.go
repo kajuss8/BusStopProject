@@ -26,7 +26,7 @@ func GetAllCalendars() ([]Calendar, error) {
 	var calendarsResult []Calendar
 	calendars, err := handleFiles.ReadFile(CalendarFilePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("GetAllCalendars failed: %w", err)
 	}
 
 	for _, calendar := range calendars {
@@ -61,7 +61,7 @@ func GetAllCalendars() ([]Calendar, error) {
 func ConvertServiceIdToCalendarDays(serviceIds []int) ([][]int, error){
 	calendars, err := GetAllCalendars()
 	if err != nil {
-		return nil, fmt.Errorf("GetAllCalendars failed: %w", err)
+		return nil, err
 	}
 
 	calendarMap := make(map[int][]int, len(calendars))
@@ -78,21 +78,4 @@ func ConvertServiceIdToCalendarDays(serviceIds []int) ([][]int, error){
 		}
 	}
 	return result, nil
-}
-
-func GetCalendarById(serviceIds []int) (Calendar, error) {
-	calendars, err := GetAllCalendars()
-	if err != nil {
-		return Calendar{}, fmt.Errorf("GetCalendarById failed: %w", err)
-	}
-
-	for _, calendar := range calendars {
-		for _, id := range serviceIds {
-			if calendar.ServiceId == id {
-				return calendar, nil
-			}
-		}
-	}
-
-	return Calendar{}, fmt.Errorf("no calendar found for the given service IDs")
 }

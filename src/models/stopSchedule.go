@@ -17,14 +17,6 @@ type StopInformation struct {
 	ArrivalTime      []string `json:"arrivalTimes"`
 }
 
-func CreateStopSchedule(stopName string, stopInfo []StopInformation) {
-
-}
-
-func CreateStopInformation(routeShortName string, routeLongName string, routeType string, arrivalTimes []string, calendarWorkDays map[string]DayServiceAvailability) {
-
-}
-
 func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 	stop, err := createStop(stopId)
 	if err != nil {
@@ -59,7 +51,7 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 		return StopSchedule{}, err
 	}
 
-	tripHeadsign, direction := getTripHeadsignAndDirection(mappedTripShape)
+	tripHeadsign, direction := GetTripHeadsignAndDirection(mappedTripShape)
 	routeLongName := CreateRouteLongName(lName, tripHeadsign, direction)
 
 	var stopSchedule StopSchedule
@@ -117,7 +109,10 @@ func createTripsByStopTimeTripIds(tripIds []string) ([]Trip, error) {
 		return nil, err
 	}
 
-	tripsByIds := GetTripsByIds(tripIds, Trips)
+	tripsByIds, err := GetTripsByIds(tripIds, Trips)
+	if err != nil{
+		return nil, err
+	}
 	return tripsByIds, nil
 }
 

@@ -2,7 +2,6 @@ package models
 
 import (
 	"busProject/src/handleFiles"
-	"errors"
 	"fmt"
 	"strconv"
 )
@@ -41,7 +40,7 @@ func GetAllStopTimes() ([]StopTime, error){
 	var stopTimesResult []StopTime
 	stopTimes, err := handleFiles.ReadFile(stopTimeFilePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("GetAllStopTimes failed: %w", err)
 	}
 
 	for _, stopTime := range stopTimes {
@@ -80,7 +79,7 @@ func GetStopTimesByStopId(stopId string) ([]StopTime, error) {
 	}
 
 	if len(stopTimesById) == 0 {
-		return nil, errors.New("Stop not found")
+		return nil, fmt.Errorf("GetStopTimesByStopId failed: no such stop ID")
 	}
 	return stopTimesById, nil
 }
@@ -101,14 +100,6 @@ func GetTripIds(stopTimes []StopTime) []string {
 	return tripIds
 }
 
-func GetSequence(stopTimes []StopTime) []int {
-	var sequences []int
-	for _, stopTime := range stopTimes {
-		sequences = append(sequences, stopTime.StopSequence)
-	}
-	return sequences
-}
-
 func ConvertTripIdToStopTimesArrivalTime(mappedTrip [][]Trip, stopTimesByStopId []StopTime) (arrivalTimes [][]string, err error) {
 	stopTimeMap := make(map[string]string, len(stopTimesByStopId))
 	for _, stopTime := range stopTimesByStopId {
@@ -122,7 +113,7 @@ func ConvertTripIdToStopTimesArrivalTime(mappedTrip [][]Trip, stopTimesByStopId 
 			if arrivalTime, exists := stopTimeMap[trip.TripId]; exists {
 				times = append(times, arrivalTime)
 			} else {
-				return nil, fmt.Errorf("ConvertTripIdToStopTimesArrivalTime no such trip ID")
+				return nil, fmt.Errorf("ConvertTripIdToStopTimesArrivalTime failed: no such trip ID")
 			}
 		}
 		arrTimes = append(arrTimes, times)

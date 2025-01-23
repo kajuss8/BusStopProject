@@ -2,7 +2,7 @@ package models
 
 import (
 	"busProject/src/handleFiles"
-	"errors"
+	"fmt"
 	"strconv"
 )
 
@@ -31,11 +31,10 @@ type Stop struct {
 const stopFilePath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder/stops.txt"
 
 func GetAllStops() ([]Stop, error) {
-
 	var stopsResult []Stop
 	stops, err := handleFiles.ReadFile(stopFilePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("GetAllStops failed: %w", err)
 	}
 	
 	for _, stop := range stops {
@@ -75,7 +74,7 @@ func GetStopById(stopId string) (Stop, error) {
 			return stop, nil
 		}
 	}
-	return Stop{}, errors.New("Stop not found")
+	return Stop{}, fmt.Errorf("GetStopId failed: no such stop ID")
 }
 
 func GetStopName(stop Stop) string {

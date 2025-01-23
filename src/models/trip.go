@@ -2,7 +2,7 @@ package models
 
 import (
 	"busProject/src/handleFiles"
-	"errors"
+	"fmt"
 	"strconv"
 )
 
@@ -38,7 +38,7 @@ func GetAllTrips() ([]Trip, error) {
 	var TripsResult []Trip
 	trips, err := handleFiles.ReadFile(tripFilePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("GetAllTrips failed: %w", err)
 	}
 
 	for _, trip := range trips {
@@ -62,10 +62,6 @@ func GetAllTrips() ([]Trip, error) {
 			WheelchairAccessible: WheelchairAccessibility(wheelchairAccessible),
 		})
 	}
-
-	if len(TripsResult) == 0 {
-		return nil, errors.New("Stop not found")
-	}
 	return TripsResult, nil
 }
 
@@ -80,25 +76,24 @@ func GetTripById(tripId string) (Trip, error) {
 			return trip, nil
 		}
 	}
-	return Trip{}, errors.New("Trip not found")
+	return Trip{}, fmt.Errorf("GetTripById failed: no such trip ID")
 }
 
-func GetRouteId(trip Trip) (string) {
-	return trip.RouteId
-}
+func GetTripsByIds(StopTimetripIds []string, trips []Trip) ([]Trip, error) {
+	tripMap := make(map[string]Trip, len(StopTimetripIds))
+	for _, trip := range trips {
+		tripMap[trip.TripId] = trip
+	}
 
-func GetTripsByIds(StopTimetripIds []string, trips []Trip) []Trip {
-	startIndex := 0
 	var routeIdsResult []Trip
-	for _, tripId := range StopTimetripIds{
-		for i := startIndex; i < len(trips); i++{
-			if tripId == trips[i].TripId{
-				routeIdsResult = append(routeIdsResult, trips[i])
-				startIndex = i
-			}
+	for _, tripId := range StopTimetripIds {
+		if trip, exists := tripMap[tripId]; exists {
+			routeIdsResult = append(routeIdsResult, trip)
+		} else {
+			return nil, fmt.Errorf("GetTripsByIds failed: no such trip ID")
 		}
 	}
-	return routeIdsResult
+	return routeIdsResult, nil
 }
 
 func MapTripsShapeId(trips []Trip) [][]Trip {
@@ -119,7 +114,7 @@ func MapTripsShapeId(trips []Trip) [][]Trip {
 	return groupedTrips
 }
 
-func getTripHeadsignAndDirection(trips [][]Trip) (tHeadSign []string, tDirection []int){
+func GetTripHeadsignAndDirection(trips [][]Trip) (tHeadSign []string, tDirection []int){
 	var headsign []string
 	var direction []int
 	for _, trip := range trips{
@@ -127,17 +122,6 @@ func getTripHeadsignAndDirection(trips [][]Trip) (tHeadSign []string, tDirection
 		headsign = append(headsign, trip[0].TripHeadsign)
 	}
 	return headsign, direction
-}
-
-func GetMapTripsShapeTripIds(shapeIds [][]Trip) ([]string) {
-	var tripIdResult []string
-	for _, value := range shapeIds{
-		for _, v := range value {
-			tripIdResult = append(tripIdResult, v.TripId)
-			break
-		}
-	}
-	return tripIdResult
 }
 
 func GetMapTripsShapeServiceIds(shapeIdsMap [][]Trip) []int {
@@ -160,28 +144,4 @@ func GetMapTripsShapeRouteId(shapeIdsMap [][]Trip) []string {
 		}
 	}
 	return result
-}
-
-func GetTripRouteIds(trips []Trip) []string {
-	var routeIds []string
-	for _, trip := range trips {
-		routeIds = append(routeIds, trip.RouteId)
-	}
-	return routeIds
-}
-
-func GetServiceId(trip Trip) int {
-	return trip.ServiceId
-}
-
-func GetTripHeadsign(trip Trip) string {
-	return trip.TripHeadsign
-}
-
-func GetDirection(trip Trip) Direction {
-	return trip.DirectionId
-}
-
-func GetShapeId(trip Trip) string {
-	return trip.ShapeId
 }
