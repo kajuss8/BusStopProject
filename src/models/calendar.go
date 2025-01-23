@@ -2,6 +2,7 @@ package models
 
 import (
 	"busProject/src/handleFiles"
+	"fmt"
 	"strconv"
 )
 
@@ -57,8 +58,11 @@ func GetAllCalendars() ([]Calendar, error) {
 	return calendarsResult, nil
 }
 
-func ConvertServiceIdToCalendarDays(serviceIds []int) [][]int{
-	calendars, _ := GetAllCalendars()
+func ConvertServiceIdToCalendarDays(serviceIds []int) ([][]int, error){
+	calendars, err := GetAllCalendars()
+	if err != nil {
+		return nil, fmt.Errorf("GetAllCalendars failed: %w", err)
+	}
 
 	var result [][]int
 	for _, serviceId := range serviceIds {
@@ -69,13 +73,16 @@ func ConvertServiceIdToCalendarDays(serviceIds []int) [][]int{
 			}
 		}
 	}
-	return result
+	if result == nil{
+		return nil, fmt.Errorf("ConvertServiceIdToCalendarDays failes: result nil")
+	}
+	return result, nil
 }
 
 func GetCalendarById(serviceIds []int) (Calendar, error) {
 	calendars, err := GetAllCalendars()
 	if err != nil {
-		return Calendar{}, err
+		return Calendar{}, fmt.Errorf("GetCalendarById failed: %w", err)
 	}
 
 	for _, calendar := range calendars {
@@ -85,5 +92,6 @@ func GetCalendarById(serviceIds []int) (Calendar, error) {
 			}
 		}
 	}
-	return Calendar{}, nil
+
+	return Calendar{}, fmt.Errorf("no calendar found for the given service IDs")
 }

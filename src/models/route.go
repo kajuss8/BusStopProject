@@ -2,6 +2,7 @@ package models
 
 import (
 	"busProject/src/handleFiles"
+	"fmt"
 	"strconv"
 )
 
@@ -74,27 +75,30 @@ func GetRouteById(routeId string) (Route, error) {
         return Route{}, err
     }
 
-    for _, route := range routes {
-        if route.RouteId == routeId {
-            return route, nil
-        }
-    }
-    return Route{}, nil
+	routeMap := make(map[string]Route, len(routes))
+	for _, route := range routes{
+		routeMap[route.RouteId] = route
+	}
+    return routeMap[routeId], nil
 }
 
-func GetDifferentRouts(routeIds []string, routs []Route) []Route {
-    startIndex := 0
-    var routesResult []Route
-    for _, route := range routs {
-        for i := startIndex; i < len(routeIds); i++{
-            if route.RouteId == routeIds[i]{
-                routesResult = append(routesResult, route)
-				startIndex = i
-				break
-            }
-        }
-    }
-    return routesResult
+func GetDifferentRouts(routeIds []string, routes []Route) ([]Route, error) {
+	routeMap := make(map[string]Route, len(routes))
+	for _, route := range routes {
+		routeMap[route.RouteId] = route 
+	}
+
+	var routesResult []Route
+	for _, routeId := range routeIds{
+		if route, exists := routeMap[routeId]; exists{
+			routesResult = append(routesResult, route)
+		}
+	}
+	if routesResult == nil{
+		return nil, fmt.Errorf("GetDifferentRoutes routesResult is nil")
+	}
+	
+    return routesResult, nil
 }
 
 func GetRouteIds(routes []Route) []string {
@@ -106,21 +110,26 @@ func GetRouteIds(routes []Route) []string {
 	return result
 }
 
-func ConvertTripIdToRoutesShortAndLongName(routeIds []string) (shortName []string, longName []string) {
+func ConvertTripIdToRoutesShortAndLongName(routeIds []string) (shortName []string, longName []string, err error) {
+	routes, err := GetAllRoutes()
+	if err != nil{
+		return nil, nil, fmt.Errorf("GetAllRoutes failed: %w", err)
+	}
+
+	routeMap := make(map[string]Route, len(routes))
+	for _, route := range routes {
+		routeMap[route.RouteId] = route
+	}
+
 	var sName []string
 	var lName []string
-	routes, _ := GetAllRoutes()
-	
-    for _, routeId := range routeIds {
-        for _, route := range routes{
-            if route.RouteId == routeId{
-                sName = append(sName, route.RouteShortName)
-				lName = append(lName, route.RouteLongName)
-				break
-            }
-        }
-    }
-    return sName, lName
+	for _, routeId := range routeIds {
+		if route, exists := routeMap[routeId]; exists {
+			sName = append(sName, route.RouteShortName)
+			lName = append(lName, route.RouteLongName)
+		}
+	}
+    return sName, lName, nil
 }
 
 func GetRouteShortName(route Route) string {
