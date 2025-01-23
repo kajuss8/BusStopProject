@@ -92,12 +92,10 @@ func GetDifferentRouts(routeIds []string, routes []Route) ([]Route, error) {
 	for _, routeId := range routeIds{
 		if route, exists := routeMap[routeId]; exists{
 			routesResult = append(routesResult, route)
+		}else{
+			return nil, fmt.Errorf("GetDifferentRouts failed: no such route ID")
 		}
 	}
-	if routesResult == nil{
-		return nil, fmt.Errorf("GetDifferentRoutes routesResult is nil")
-	}
-	
     return routesResult, nil
 }
 

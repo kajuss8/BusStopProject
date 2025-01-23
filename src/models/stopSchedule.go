@@ -54,7 +54,10 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 	if err != nil{
 		return StopSchedule{}, err
 	}
-	arrivalTimes := ConvertTripIdToStopTimesArrivalTime(mappedTripShape, stopTimes)
+	arrivalTimes, err := ConvertTripIdToStopTimesArrivalTime(mappedTripShape, stopTimes)
+	if err != nil{
+		return StopSchedule{}, err
+	}
 
 	tripHeadsign, direction := getTripHeadsignAndDirection(mappedTripShape)
 	routeLongName := CreateRouteLongName(lName, tripHeadsign, direction)

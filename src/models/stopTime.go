@@ -3,6 +3,7 @@ package models
 import (
 	"busProject/src/handleFiles"
 	"errors"
+	"fmt"
 	"strconv"
 )
 
@@ -108,19 +109,23 @@ func GetSequence(stopTimes []StopTime) []int {
 	return sequences
 }
 
-func ConvertTripIdToStopTimesArrivalTime(mappedTrip [][]Trip, stopTimesByStopId []StopTime) (arrivalTimes [][]string) {
+func ConvertTripIdToStopTimesArrivalTime(mappedTrip [][]Trip, stopTimesByStopId []StopTime) (arrivalTimes [][]string, err error) {
+	stopTimeMap := make(map[string]string, len(stopTimesByStopId))
+	for _, stopTime := range stopTimesByStopId {
+		stopTimeMap[stopTime.TripId] = stopTime.ArrivalTime
+	}
+
 	var arrTimes [][]string
-    for _, trips := range mappedTrip {
+	for _, trips := range mappedTrip {
 		var times []string
-        for _, trip := range trips {
-            for _, stopTime := range stopTimesByStopId {
-                if trip.TripId == stopTime.TripId {
-                    times = append(times, stopTime.ArrivalTime)
-					break
-                }
-            }
-        }
+		for _, trip := range trips {
+			if arrivalTime, exists := stopTimeMap[trip.TripId]; exists {
+				times = append(times, arrivalTime)
+			} else {
+				return nil, fmt.Errorf("ConvertTripIdToStopTimesArrivalTime no such trip ID")
+			}
+		}
 		arrTimes = append(arrTimes, times)
-    }
-    return arrTimes
+	}
+    return arrTimes, nil
 }

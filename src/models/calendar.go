@@ -64,17 +64,18 @@ func ConvertServiceIdToCalendarDays(serviceIds []int) ([][]int, error){
 		return nil, fmt.Errorf("GetAllCalendars failed: %w", err)
 	}
 
+	calendarMap := make(map[int][]int, len(calendars))
+	for _, calendar := range calendars {
+		calendarMap[calendar.ServiceId] = calendar.WeekDaysService
+	}
+
 	var result [][]int
 	for _, serviceId := range serviceIds {
-		for _, calendar := range calendars {
-			if serviceId == calendar.ServiceId{
-				result = append(result, calendar.WeekDaysService)
-				break
-			}
+		if days, exists := calendarMap[serviceId]; exists {
+			result = append(result, days)
+		} else {
+			return nil, fmt.Errorf("ConvertServiceIdToCalendarDays failes: no such service ID")
 		}
-	}
-	if result == nil{
-		return nil, fmt.Errorf("ConvertServiceIdToCalendarDays failes: result nil")
 	}
 	return result, nil
 }
