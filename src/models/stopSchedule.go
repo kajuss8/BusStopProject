@@ -8,13 +8,11 @@ type StopSchedule struct {
 }
 
 type StopInformation struct {
-	RouteShortName string `json:"routeShortName"`
-	RouteLongName  string `json:"routeLongName"`
-	DirectionId    int    `json:"direction"`
-	TripHeadsign   string `json:"tripHeadsign"`
-	//RouteType			TransportType `json:"routeType"`
-	CalendarWorkDays []int    `json:"workDays"`
-	ArrivalTime      []string `json:"arrivalTimes"`
+	RouteShortName 		string 	 `json:"routeShortName"`
+	RouteLongName  		string 	 `json:"routeLongName"`
+	RouteType			string 	 `json:"routeType"`
+	CalendarWorkDays 	[]int    `json:"workDays"`
+	ArrivalTime      	[]string `json:"arrivalTimes"`
 }
 
 func CreateStopsSchedule(stopId string) (StopSchedule, error) {
@@ -38,7 +36,7 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 	tripRouteIds := GetMapTripsShapeRouteId(mappedTripShape)
 	serviceIds := GetMapTripsShapeServiceIds(mappedTripShape)
 
-	sName, lName, err := ConvertTripIdToRoutesShortAndLongName(tripRouteIds)
+	sName, lName, routeType, err := ConvertTripIdToRoutesShortLongNameAndType(tripRouteIds)
 	if err != nil{
 		return StopSchedule{}, err
 	}
@@ -60,15 +58,13 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 		info := struct {
 			RouteShortName   string   `json:"routeShortName"`
 			RouteLongName    string   `json:"routeLongName"`
-			DirectionId      int      `json:"direction"`
-			TripHeadsign     string   `json:"tripHeadsign"`
+			RouteType		 string 	  `json:"routeType"`
 			CalendarWorkDays []int    `json:"workDays"`
 			ArrivalTime      []string `json:"arrivalTimes"`
 		}{
 			RouteLongName:    routeLongName[i],
 			RouteShortName:   sName[i],
-			DirectionId:      direction[i],
-			TripHeadsign:     tripHeadsign[i],
+			RouteType: 		routeType[i],
 			CalendarWorkDays: calWorkDays[i],
 			ArrivalTime:      arrivalTimes[i],
 		}

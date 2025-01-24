@@ -108,10 +108,10 @@ func GetRouteIds(routes []Route) []string {
 	return result
 }
 
-func ConvertTripIdToRoutesShortAndLongName(routeIds []string) (shortName []string, longName []string, err error) {
+func ConvertTripIdToRoutesShortLongNameAndType(routeIds []string) (shortName []string, longName []string, routeT []string, err error) {
 	routes, err := GetAllRoutes()
 	if err != nil{
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	routeMap := make(map[string]Route, len(routes))
@@ -121,11 +121,26 @@ func ConvertTripIdToRoutesShortAndLongName(routeIds []string) (shortName []strin
 
 	var sName []string
 	var lName []string
+	var routeType []TransportType
 	for _, routeId := range routeIds {
 		if route, exists := routeMap[routeId]; exists {
 			sName = append(sName, route.RouteShortName)
 			lName = append(lName, route.RouteLongName)
+			routeType = append(routeType, route.RouteType)
 		}
 	}
-    return sName, lName, nil
+    return sName, lName, ConvertRouteTypeNumberToLetter(routeType), nil
+}
+
+func ConvertRouteTypeNumberToLetter(routeTypes []TransportType) []string {
+	var routeLetter []string
+	for _, routeType := range routeTypes{
+		switch routeType {
+		case Bus:
+			routeLetter = append(routeLetter, "A")
+		case Trolleybus:
+			routeLetter = append(routeLetter, "T")
+		}
+	}
+	return routeLetter
 }
