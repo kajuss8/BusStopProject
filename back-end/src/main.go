@@ -17,8 +17,6 @@ func getStopSchedule(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"Stop schedule": schedule})
 }
 
-
-
 func main() {
 
 	handleFiles.ProcessGtfs()

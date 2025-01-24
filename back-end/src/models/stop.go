@@ -28,11 +28,14 @@ type Stop struct {
 	ParentStation int              `json:"parentStation"`
 }
 
-const stopFilePath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder/stops.txt"
+const (
+	filepath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/back-end/gtfsFolder/"
+	stopFileName = "stops.txt"
+)
 
 func GetAllStops() ([]Stop, error) {
 	var stopsResult []Stop
-	stops, err := handleFiles.ReadFile(stopFilePath)
+	stops, err := handleFiles.ReadFile(filepath + stopFileName)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllStops failed: %w", err)
 	}

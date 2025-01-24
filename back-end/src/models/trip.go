@@ -32,11 +32,11 @@ type Trip struct {
 	WheelchairAccessible WheelchairAccessibility `json:"wheelchairAccessible"`
 }
 
-const tripFilePath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder/trips.txt"
+const tripFileName = "trips.txt"
 
 func GetAllTrips() ([]Trip, error) {
 	var TripsResult []Trip
-	trips, err := handleFiles.ReadFile(tripFilePath)
+	trips, err := handleFiles.ReadFile(filepath + tripFileName)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllTrips failed: %w", err)
 	}

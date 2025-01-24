@@ -58,7 +58,7 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 		info := struct {
 			RouteShortName   string   `json:"routeShortName"`
 			RouteLongName    string   `json:"routeLongName"`
-			RouteType		 string 	  `json:"routeType"`
+			RouteType		 string 	`json:"routeType"`
 			CalendarWorkDays []int    `json:"workDays"`
 			ArrivalTime      []string `json:"arrivalTimes"`
 		}{

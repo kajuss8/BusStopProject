@@ -34,11 +34,11 @@ type StopTime struct {
 	DropOffType   DropOffStatus `json:"dropOffType"`
 }
 
-const stopTimeFilePath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder/stop_times.txt"
+const stopTimeFileName = "stop_times.txt"
 
 func GetAllStopTimes() ([]StopTime, error){
 	var stopTimesResult []StopTime
-	stopTimes, err := handleFiles.ReadFile(stopTimeFilePath)
+	stopTimes, err := handleFiles.ReadFile(filepath + stopTimeFileName)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllStopTimes failed: %w", err)
 	}

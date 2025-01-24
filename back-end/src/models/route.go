@@ -33,11 +33,11 @@ type Route struct {
 	RouteSortOrder int           `json:"routeSortOrder"`
 }
 
-const routeFilePath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder/routes.txt"
+const routeFileName = "routes.txt"
 
 func GetAllRoutes() ([]Route, error) {
 	var routesResult []Route
-	routes, err := handleFiles.ReadFile(routeFilePath)
+	routes, err := handleFiles.ReadFile(filepath + routeFileName)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllRoutes failed: %w", err)
 	}

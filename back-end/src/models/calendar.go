@@ -20,11 +20,11 @@ type Calendar struct {
 	EndDate         string		`json:"endDate"`
 }
 
-const CalendarFilePath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder/calendar.txt"
+const CalendarFileName = "calendar.txt"
 
 func GetAllCalendars() ([]Calendar, error) {
 	var calendarsResult []Calendar
-	calendars, err := handleFiles.ReadFile(CalendarFilePath)
+	calendars, err := handleFiles.ReadFile(filepath + CalendarFileName)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllCalendars failed: %w", err)
 	}

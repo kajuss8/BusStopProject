@@ -8,9 +8,11 @@ import (
 	"path/filepath"
 )
 
-const gtfsUrlPath = "http://www.stops.lt/kaunas/kaunas/gtfs.zip"
-const gtfsFolderPath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder/gtfs.zip"
-const destination = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/gtfsFolder"
+const (
+	gtfsUrlPath     = "http://www.stops.lt/kaunas/kaunas/gtfs.zip"
+	gtfsFolderPath  = "./gtfsFolder/gtfs.zip"
+	destination     = "./gtfsFolder"
+)
 
 func ProcessGtfs() error {
 	err := downloadGtfs()
