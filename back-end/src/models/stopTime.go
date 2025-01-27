@@ -87,7 +87,7 @@ func GetStopTimesByStopId(stopId string) ([]StopTime, error) {
 func GetArrivalTimes(stopTimes []StopTime) []string {
 	var arrivalTimes []string
 	for _, stopTime := range stopTimes {
-		arrivalTimes = append(arrivalTimes, stopTime.ArrivalTime)
+		arrivalTimes = append(arrivalTimes, stopTime.ArrivalTime[:5])
 	}
 	return arrivalTimes
 }
@@ -111,7 +111,7 @@ func ConvertTripIdToStopTimesArrivalTime(mappedTrip [][]Trip, stopTimesByStopId 
 		var times []string
 		for _, trip := range trips {
 			if arrivalTime, exists := stopTimeMap[trip.TripId]; exists {
-				times = append(times, arrivalTime)
+				times = append(times, arrivalTime[:5])
 			} else {
 				return nil, fmt.Errorf("ConvertTripIdToStopTimesArrivalTime failed: no such trip ID")
 			}

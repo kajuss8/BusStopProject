@@ -22,13 +22,6 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    if (data) {
-      console.log(data); // Logs the updated value of `data`
-    }
-  }, [data]); // Run whenever `data` changes
-
-  
   return (
     <div>
       <input type="text" value={id} onChange={handleInputChange} placeholder="Enter stop ID" />
@@ -37,17 +30,21 @@ function App() {
         <div>
           <h1>{data.stopName}</h1>
           {data.stopInformation.map((info, index) => (
-            <div key={index}>
-              <p>Route Short Name: {info.routeShortName}</p>
-              <p>Route Long Name: {info.routeLongName}</p>
-              <p>Route Type: {info.routeType}</p>
-              <p>Calendar Work Days: {info.workDays.join(', ')}</p>
-              <p>Arrival Times: {info.arrivalTimes.join(', ')}</p>
+            <div key={index} >
+              <div className='Contaner'>
+                <div className="row p-3 ">
+                  <div className="col-1 p-3 ">{info.routeType} {info.routeShortName}</div>
+                  <div className='col-3 p-3'>{info.routeLongName}</div>
+                  <div className="col p-3">{info.workDays.join(', ')}</div>
+                  <div className=''>{info.arrivalTimes.join(', ')}</div>
+                </div>
+              </div>
+              
             </div>
           ))}
         </div>
       ) : (
-      <p>Press the button to load stop information.</p>
+        <p>Press the button to load stop information.</p>
       )}
     </div>
   );
