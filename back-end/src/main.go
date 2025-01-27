@@ -30,7 +30,7 @@ func getStopSchedule(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stop not found"})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"Stop schedule": schedule})
+	ctx.JSON(http.StatusOK, gin.H{"stopSchedule": schedule})
 }
 
 func main() {
