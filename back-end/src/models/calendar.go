@@ -22,7 +22,7 @@ type Calendar struct {
 
 const CalendarFileName = "calendar.txt"
 
-func GetAllCalendars() ([]Calendar, error) {
+func getAllCalendars() ([]Calendar, error) {
 	var calendarsResult []Calendar
 	calendars, err := handleFiles.ReadFile(filepath + CalendarFileName)
 	if err != nil {
@@ -58,8 +58,8 @@ func GetAllCalendars() ([]Calendar, error) {
 	return calendarsResult, nil
 }
 
-func ConvertServiceIdToCalendarDays(serviceIds []int) ([][]int, error){
-	calendars, err := GetAllCalendars()
+func convertServiceIdToCalendarDays(serviceIds []int) ([][]int, error){
+	calendars, err := getAllCalendars()
 	if err != nil {
 		return nil, err
 	}

@@ -33,7 +33,7 @@ const (
 	stopFileName = "stops.txt"
 )
 
-func GetAllStops() ([]Stop, error) {
+func getAllStops() ([]Stop, error) {
 	var stopsResult []Stop
 	stops, err := handleFiles.ReadFile(filepath + stopFileName)
 	if err != nil {
@@ -66,8 +66,8 @@ func GetAllStops() ([]Stop, error) {
 	return stopsResult, nil
 }
 
-func GetStopById(stopId string) (Stop, error) {
-	stops, err := GetAllStops()
+func getStopById(stopId string) (Stop, error) {
+	stops, err := getAllStops()
 	if err != nil {
 		return Stop{}, err
 	}
@@ -80,6 +80,6 @@ func GetStopById(stopId string) (Stop, error) {
 	return Stop{}, fmt.Errorf("GetStopId failed: no such stop ID")
 }
 
-func GetStopName(stop Stop) string {
+func getStopName(stop Stop) string {
 	return stop.StopName
 }

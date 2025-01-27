@@ -31,16 +31,16 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 	if err != nil {
 		return StopSchedule{}, err
 	}
-	mappedTripShape := MapTripsShapeId(trips)
+	mappedTripShape := tripsShapeIdMapped(trips)
 
-	tripRouteIds := GetMapTripsShapeRouteId(mappedTripShape)
-	serviceIds := GetMapTripsShapeServiceIds(mappedTripShape)
+	tripRouteIds := getTripsShapeRouteId(mappedTripShape)
+	serviceIds := getTripsShapeServiceIds(mappedTripShape)
 
-	sName, lName, routeType, err := ConvertTripIdToRoutesShortLongNameAndType(tripRouteIds)
+	sName, lName, routeType, err := convertTripIdToRoutesShortLongNameAndType(tripRouteIds)
 	if err != nil{
 		return StopSchedule{}, err
 	}
-	calWorkDays, err := ConvertServiceIdToCalendarDays(serviceIds)
+	calWorkDays, err := convertServiceIdToCalendarDays(serviceIds)
 	if err != nil{
 		return StopSchedule{}, err
 	}
@@ -49,11 +49,11 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 		return StopSchedule{}, err
 	}
 
-	tripHeadsign, direction := GetTripHeadsignAndDirection(mappedTripShape)
-	routeLongName := CreateRouteLongName(lName, tripHeadsign, direction)
+	tripHeadsign, direction := getTripHeadsignAndDirection(mappedTripShape)
+	routeLongName := createRouteLongName(lName, tripHeadsign, direction)
 
 	var stopSchedule StopSchedule
-	stopSchedule.StopName = GetStopName(stop)
+	stopSchedule.StopName = getStopName(stop)
 	for i := 0; i < len(mappedTripShape); i++ {
 		info := struct {
 			RouteShortName   string   `json:"routeShortName"`
@@ -74,7 +74,7 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 }
 
 func createStop(stopId string) (Stop, error) {
-	stop, err := GetStopById(stopId)
+	stop, err := getStopById(stopId)
 	if err != nil {
 		return stop, err
 	}
@@ -96,7 +96,7 @@ func takeStopTimeTripIds(stopTimes []StopTime) (tripIds []string) {
 }
 
 func createTrips() ([]Trip, error) {
-	return GetAllTrips()
+	return getAllTrips()
 }
 
 func createTripsByStopTimeTripIds(tripIds []string) ([]Trip, error) {
@@ -105,14 +105,14 @@ func createTripsByStopTimeTripIds(tripIds []string) ([]Trip, error) {
 		return nil, err
 	}
 
-	tripsByIds, err := GetTripsByIds(tripIds, Trips)
+	tripsByIds, err := getTripsByIds(tripIds, Trips)
 	if err != nil{
 		return nil, err
 	}
 	return tripsByIds, nil
 }
 
-func CreateRouteLongName(lName []string, tHeadSign []string, direction []int) (routeLongName []string) {
+func createRouteLongName(lName []string, tHeadSign []string, direction []int) (routeLongName []string) {
 	for i, name := range lName {
 		parts := strings.Split(name, " - ")
 		if direction[i] == 1 {

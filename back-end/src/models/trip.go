@@ -34,7 +34,7 @@ type Trip struct {
 
 const tripFileName = "trips.txt"
 
-func GetAllTrips() ([]Trip, error) {
+func getAllTrips() ([]Trip, error) {
 	var TripsResult []Trip
 	trips, err := handleFiles.ReadFile(filepath + tripFileName)
 	if err != nil {
@@ -65,21 +65,7 @@ func GetAllTrips() ([]Trip, error) {
 	return TripsResult, nil
 }
 
-func GetTripById(tripId string) (Trip, error) {
-	trips, err := GetAllTrips()
-	if err != nil {
-		return Trip{}, err
-	}
-
-	for _, trip := range trips {
-		if trip.TripId == tripId {
-			return trip, nil
-		}
-	}
-	return Trip{}, fmt.Errorf("GetTripById failed: no such trip ID")
-}
-
-func GetTripsByIds(StopTimetripIds []string, trips []Trip) ([]Trip, error) {
+func getTripsByIds(StopTimetripIds []string, trips []Trip) ([]Trip, error) {
 	tripMap := make(map[string]Trip, len(StopTimetripIds))
 	for _, trip := range trips {
 		tripMap[trip.TripId] = trip
@@ -96,7 +82,7 @@ func GetTripsByIds(StopTimetripIds []string, trips []Trip) ([]Trip, error) {
 	return routeIdsResult, nil
 }
 
-func MapTripsShapeId(trips []Trip) [][]Trip {
+func tripsShapeIdMapped(trips []Trip) [][]Trip {
 	var groupedTrips [][]Trip
 	for _, trip := range trips {
 		found := false
@@ -114,7 +100,7 @@ func MapTripsShapeId(trips []Trip) [][]Trip {
 	return groupedTrips
 }
 
-func GetTripHeadsignAndDirection(trips [][]Trip) (tHeadSign []string, tDirection []int){
+func getTripHeadsignAndDirection(trips [][]Trip) (tHeadSign []string, tDirection []int){
 	var headsign []string
 	var direction []int
 	for _, trip := range trips{
@@ -124,9 +110,9 @@ func GetTripHeadsignAndDirection(trips [][]Trip) (tHeadSign []string, tDirection
 	return headsign, direction
 }
 
-func GetMapTripsShapeServiceIds(shapeIdsMap [][]Trip) []int {
+func getTripsShapeServiceIds(shapeIdsMapped [][]Trip) []int {
 	var result []int
-	for _, value := range shapeIdsMap{
+	for _, value := range shapeIdsMapped{
 		for _, v := range value {
 			result = append(result, v.ServiceId)
 			break
@@ -135,9 +121,9 @@ func GetMapTripsShapeServiceIds(shapeIdsMap [][]Trip) []int {
 	return result
 }
 
-func GetMapTripsShapeRouteId(shapeIdsMap [][]Trip) []string {
+func getTripsShapeRouteId(shapeIdsMapped [][]Trip) []string {
 	var result []string
-	for _, value := range shapeIdsMap{
+	for _, value := range shapeIdsMapped{
 		for _, v := range value {
 			result = append(result, v.RouteId)
 			break

@@ -35,7 +35,7 @@ type Route struct {
 
 const routeFileName = "routes.txt"
 
-func GetAllRoutes() ([]Route, error) {
+func getAllRoutes() ([]Route, error) {
 	var routesResult []Route
 	routes, err := handleFiles.ReadFile(filepath + routeFileName)
 	if err != nil {
@@ -69,47 +69,8 @@ func GetAllRoutes() ([]Route, error) {
 	return routesResult, nil
 }
 
-func GetRouteById(routeId string) (Route, error) {
-    routes, err := GetAllRoutes()
-    if err != nil {
-        return Route{}, err
-    }
-
-	routeMap := make(map[string]Route, len(routes))
-	for _, route := range routes{
-		routeMap[route.RouteId] = route
-	}
-    return routeMap[routeId], nil
-}
-
-func GetDifferentRouts(routeIds []string, routes []Route) ([]Route, error) {
-	routeMap := make(map[string]Route, len(routes))
-	for _, route := range routes {
-		routeMap[route.RouteId] = route 
-	}
-
-	var routesResult []Route
-	for _, routeId := range routeIds{
-		if route, exists := routeMap[routeId]; exists{
-			routesResult = append(routesResult, route)
-		}else{
-			return nil, fmt.Errorf("GetDifferentRouts failed: no such route ID")
-		}
-	}
-    return routesResult, nil
-}
-
-func GetRouteIds(routes []Route) []string {
-	var result []string
-	for _, route := range routes{
-		result = append(result, route.RouteId)
-	}
-
-	return result
-}
-
-func ConvertTripIdToRoutesShortLongNameAndType(routeIds []string) (shortName []string, longName []string, routeT []string, err error) {
-	routes, err := GetAllRoutes()
+func convertTripIdToRoutesShortLongNameAndType(routeIds []string) (shortName []string, longName []string, routeT []string, err error) {
+	routes, err := getAllRoutes()
 	if err != nil{
 		return nil, nil, nil, err
 	}
@@ -129,10 +90,10 @@ func ConvertTripIdToRoutesShortLongNameAndType(routeIds []string) (shortName []s
 			routeType = append(routeType, route.RouteType)
 		}
 	}
-    return sName, lName, ConvertRouteTypeNumberToLetter(routeType), nil
+    return sName, lName, convertRouteTypeNumberToLetter(routeType), nil
 }
 
-func ConvertRouteTypeNumberToLetter(routeTypes []TransportType) []string {
+func convertRouteTypeNumberToLetter(routeTypes []TransportType) []string {
 	var routeLetter []string
 	for _, routeType := range routeTypes{
 		switch routeType {

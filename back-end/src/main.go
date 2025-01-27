@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CORSMiddleware() gin.HandlerFunc {
+func corsMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
         c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
         c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -38,7 +38,7 @@ func main() {
 	handleFiles.ProcessGtfs()
 
 	router := gin.Default()
-	router.Use(CORSMiddleware())
+	router.Use(corsMiddleware())
 	router.GET("/StopSchedle/:id", getStopSchedule)
 	router.Run()
 }
