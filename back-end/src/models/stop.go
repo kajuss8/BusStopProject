@@ -33,8 +33,7 @@ const (
 	stopFileName = "stops.txt"
 )
 
-func getAllStops() ([]Stop, error) {
-	var stopsResult []Stop
+func getAllStops() (stopsResult []Stop, err error) {
 	stops, err := handleFiles.ReadFile(filepath + stopFileName)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllStops failed: %w", err)

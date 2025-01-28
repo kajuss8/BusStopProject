@@ -36,8 +36,7 @@ type StopTime struct {
 
 const stopTimeFileName = "stop_times.txt"
 
-func GetAllStopTimes() ([]StopTime, error){
-	var stopTimesResult []StopTime
+func GetAllStopTimes() (stopTimesResult []StopTime, err error){
 	stopTimes, err := handleFiles.ReadFile(filepath + stopTimeFileName)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllStopTimes failed: %w", err)
@@ -65,13 +64,12 @@ func GetAllStopTimes() ([]StopTime, error){
 	return stopTimesResult, nil
 }
 
-func GetStopTimesByStopId(stopId string) ([]StopTime, error) {
+func GetStopTimesByStopId(stopId string) (stopTimesById []StopTime, err error) {
 	stopTimes, err := GetAllStopTimes()
 	if err != nil {
 		return nil, err
 	}
 
-	var stopTimesById []StopTime
 	for _, stopTime := range stopTimes {
 		if stopTime.StopId == stopId {
 			stopTimesById = append(stopTimesById, stopTime)
@@ -84,16 +82,14 @@ func GetStopTimesByStopId(stopId string) ([]StopTime, error) {
 	return stopTimesById, nil
 }
 
-func GetArrivalTimes(stopTimes []StopTime) []string {
-	var arrivalTimes []string
+func GetArrivalTimes(stopTimes []StopTime)  (arrivalTimes []string) {
 	for _, stopTime := range stopTimes {
 		arrivalTimes = append(arrivalTimes, stopTime.ArrivalTime[:5])
 	}
 	return arrivalTimes
 }
 
-func GetTripIds(stopTimes []StopTime) []string {
-	var tripIds []string
+func GetTripIds(stopTimes []StopTime) (tripIds []string) {
 	for _, stopTime := range stopTimes {
 		tripIds = append(tripIds, stopTime.TripId)
 	}
@@ -106,7 +102,6 @@ func ConvertTripIdToStopTimesArrivalTime(mappedTrip [][]Trip, stopTimesByStopId 
 		stopTimeMap[stopTime.TripId] = stopTime.ArrivalTime
 	}
 
-	var arrTimes [][]string
 	for _, trips := range mappedTrip {
 		var times []string
 		for _, trip := range trips {
@@ -116,7 +111,7 @@ func ConvertTripIdToStopTimesArrivalTime(mappedTrip [][]Trip, stopTimesByStopId 
 				return nil, fmt.Errorf("ConvertTripIdToStopTimesArrivalTime failed: no such trip ID")
 			}
 		}
-		arrTimes = append(arrTimes, times)
+		arrivalTimes = append(arrivalTimes, times)
 	}
-    return arrTimes, nil
+    return arrivalTimes, nil
 }

@@ -34,8 +34,7 @@ type Trip struct {
 
 const tripFileName = "trips.txt"
 
-func getAllTrips() ([]Trip, error) {
-	var TripsResult []Trip
+func getAllTrips() (TripsResult []Trip, err error) {
 	trips, err := handleFiles.ReadFile(filepath + tripFileName)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllTrips failed: %w", err)
@@ -65,25 +64,23 @@ func getAllTrips() ([]Trip, error) {
 	return TripsResult, nil
 }
 
-func getTripsByIds(StopTimetripIds []string, trips []Trip) ([]Trip, error) {
+func getTripsByIds(StopTimetripIds []string, trips []Trip) (routeIds []Trip, err error) {
 	tripMap := make(map[string]Trip, len(StopTimetripIds))
 	for _, trip := range trips {
 		tripMap[trip.TripId] = trip
 	}
 
-	var routeIdsResult []Trip
 	for _, tripId := range StopTimetripIds {
 		if trip, exists := tripMap[tripId]; exists {
-			routeIdsResult = append(routeIdsResult, trip)
+			routeIds = append(routeIds, trip)
 		} else {
 			return nil, fmt.Errorf("GetTripsByIds failed: no such trip ID")
 		}
 	}
-	return routeIdsResult, nil
+	return routeIds, nil
 }
 
-func tripsShapeIdMapped(trips []Trip) [][]Trip {
-	var groupedTrips [][]Trip
+func tripsShapeIdMapped(trips []Trip) (groupedTrips [][]Trip) {
 	for _, trip := range trips {
 		found := false
 		for i := range groupedTrips {
@@ -100,9 +97,7 @@ func tripsShapeIdMapped(trips []Trip) [][]Trip {
 	return groupedTrips
 }
 
-func getTripHeadsignAndDirection(trips [][]Trip) (tHeadSign []string, tDirection []int){
-	var headsign []string
-	var direction []int
+func getTripHeadsignAndDirection(trips [][]Trip) (headsign []string, direction []int){
 	for _, trip := range trips{
 		direction = append(direction, int(trip[0].DirectionId))
 		headsign = append(headsign, trip[0].TripHeadsign)
@@ -110,24 +105,22 @@ func getTripHeadsignAndDirection(trips [][]Trip) (tHeadSign []string, tDirection
 	return headsign, direction
 }
 
-func getTripsShapeServiceIds(shapeIdsMapped [][]Trip) []int {
-	var result []int
+func getTripsShapeServiceIds(shapeIdsMapped [][]Trip) (serviceIds []int) {
 	for _, value := range shapeIdsMapped{
 		for _, v := range value {
-			result = append(result, v.ServiceId)
+			serviceIds = append(serviceIds, v.ServiceId)
 			break
 		}
 	}
-	return result
+	return serviceIds
 }
 
-func getTripsShapeRouteId(shapeIdsMapped [][]Trip) []string {
-	var result []string
+func getTripsShapeRouteId(shapeIdsMapped [][]Trip) (routeIds []string) {
 	for _, value := range shapeIdsMapped{
 		for _, v := range value {
-			result = append(result, v.RouteId)
+			routeIds = append(routeIds, v.RouteId)
 			break
 		}
 	}
-	return result
+	return routeIds
 }

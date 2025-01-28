@@ -22,8 +22,7 @@ type Calendar struct {
 
 const CalendarFileName = "calendar.txt"
 
-func getAllCalendars() ([]Calendar, error) {
-	var calendarsResult []Calendar
+func getAllCalendars() (calendarsResult []Calendar, err error) {
 	calendars, err := handleFiles.ReadFile(filepath + CalendarFileName)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllCalendars failed: %w", err)
@@ -58,7 +57,7 @@ func getAllCalendars() ([]Calendar, error) {
 	return calendarsResult, nil
 }
 
-func convertServiceIdToCalendarDays(serviceIds []int) ([][]int, error){
+func convertServiceIdToCalendarDays(serviceIds []int) (calendarDays [][]int, err error){
 	calendars, err := getAllCalendars()
 	if err != nil {
 		return nil, err
@@ -69,13 +68,12 @@ func convertServiceIdToCalendarDays(serviceIds []int) ([][]int, error){
 		calendarMap[calendar.ServiceId] = calendar.WeekDaysService
 	}
 
-	var result [][]int
 	for _, serviceId := range serviceIds {
 		if days, exists := calendarMap[serviceId]; exists {
-			result = append(result, days)
+			calendarDays = append(calendarDays, days)
 		} else {
 			return nil, fmt.Errorf("ConvertServiceIdToCalendarDays failes: no such service ID")
 		}
 	}
-	return result, nil
+	return calendarDays, nil
 }
