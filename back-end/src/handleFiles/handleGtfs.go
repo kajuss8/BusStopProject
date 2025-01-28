@@ -15,18 +15,18 @@ const (
 )
 
 func ProcessGtfs() error {
-	err := downloadGtfs()
+	err := downloadGtfs(gtfsFolderPath, gtfsUrlPath)
 	if err != nil {
 		return err
 	}
-	err = unzip()
+	err = unzip(gtfsFolderPath, destination)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func downloadGtfs() error {
+func downloadGtfs(gtfsFolderPath, gtfsUrlPath string) error {
 	out, err := os.Create(gtfsFolderPath)
 	if err != nil {
 		return err
@@ -47,7 +47,7 @@ func downloadGtfs() error {
 	return nil
 }
 
-func unzip() error {
+func unzip(gtfsFolderPath, destination string) error {
 	archive, err := zip.OpenReader(gtfsFolderPath)
 	if err != nil {
 		return err
