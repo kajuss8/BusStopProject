@@ -54,16 +54,10 @@ func CreateStopsSchedule(stopId string) (stopSchedule StopSchedule, err error) {
 
 	stopSchedule.StopName = getStopName(stop)
 	for i := 0; i < len(mappedTripShape); i++ {
-		info := struct {
-			RouteShortName   string   `json:"routeShortName"`
-			RouteLongName    string   `json:"routeLongName"`
-			RouteType		 string 	`json:"routeType"`
-			CalendarWorkDays []int    `json:"workDays"`
-			ArrivalTime      []string `json:"arrivalTimes"`
-		}{
-			RouteLongName:    routeLongName[i],
+		info := StopInformation{
 			RouteShortName:   sName[i],
-			RouteType: 		routeType[i],
+			RouteLongName:    routeLongName[i],
+			RouteType:        routeType[i],
 			CalendarWorkDays: calWorkDays[i],
 			ArrivalTime:      arrivalTimes[i],
 		}
