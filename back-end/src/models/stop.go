@@ -82,3 +82,28 @@ func getStopById(stopId string) (Stop, error) {
 func getStopName(stop Stop) string {
 	return stop.StopName
 }
+
+func GetStopNames(allStopIds [][]string) (stopNames [][]string, err error) {
+	stops, err := getAllStops()
+	if err != nil {
+		return nil, err
+	}
+
+	stopMap := make(map[string]string)
+	for _, stop := range stops {
+		stopMap[stop.StopId] = stop.StopName
+	}
+
+	for _, stopIdArr := range allStopIds {
+		var stopNameArr []string
+		for _, stopId := range stopIdArr {
+			if stopName, exists := stopMap[stopId]; exists {
+				stopNameArr = append(stopNameArr, stopName)
+			} else {
+				return nil, fmt.Errorf("getStopNames failed: no such stop ID %s", stopId)
+			}
+		}
+		stopNames = append(stopNames, stopNameArr)
+	}
+	return stopNames, nil
+}

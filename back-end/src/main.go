@@ -1,7 +1,7 @@
 package main
 
 import (
-	"busProject/src/handleFiles"
+	//"busProject/src/handleFiles"
 	"busProject/src/models"
 	"net/http"
 	"github.com/gin-gonic/gin"
@@ -25,20 +25,31 @@ func corsMiddleware() gin.HandlerFunc {
 
 func getStopSchedule(ctx *gin.Context) {
 	id := ctx.Param("id")
-	schedule, err := models.CreateStopsSchedule(id)
+	stopSchedule, err := models.CreateStopsSchedule(id)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stop not found"})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"stopSchedule": schedule})
+	ctx.JSON(http.StatusOK, gin.H{"stopSchedule": stopSchedule})
+}
+
+func getRouteSchedule(ctx *gin.Context) {
+	id := ctx.Param("id")
+	routeSchedule, err := models.CreateRouteSchedule(id)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Route not found"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"routeSchedules": routeSchedule})
 }
 
 func main() {
 
-	handleFiles.ProcessGtfs()
+	//handleFiles.ProcessGtfs()
 
 	router := gin.Default()
 	router.Use(corsMiddleware())
 	router.GET("/StopSchedle/:id", getStopSchedule)
+	router.GET("/RouteSchedule/:id", getRouteSchedule)
 	router.Run()
 }

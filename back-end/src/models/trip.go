@@ -64,7 +64,32 @@ func getAllTrips() (TripsResult []Trip, err error) {
 	return TripsResult, nil
 }
 
-func getTripsByIds(StopTimetripIds []string, trips []Trip) (routeIds []Trip, err error) {
+func getTripsByRouteId(routeId string) (tripsResult []Trip, err error) {
+	trips, err := getAllTrips()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, trip := range trips {
+		if trip.RouteId == routeId {
+			tripsResult = append(tripsResult, trip)
+		}
+	}
+	return tripsResult, err
+}
+
+func getTripIds(trips [][]Trip) (tripIds [][]string) {
+	for _, tripGroup := range trips {
+		var groupTripIds []string
+		for _, trip := range tripGroup {
+			groupTripIds = append(groupTripIds, trip.TripId)
+		}
+		tripIds = append(tripIds, groupTripIds)
+	}
+	return tripIds
+}
+
+func getTripsByTripIds(StopTimetripIds []string, trips []Trip) (routeIds []Trip, err error) {
 	tripMap := make(map[string]Trip, len(StopTimetripIds))
 	for _, trip := range trips {
 		tripMap[trip.TripId] = trip
@@ -80,7 +105,7 @@ func getTripsByIds(StopTimetripIds []string, trips []Trip) (routeIds []Trip, err
 	return routeIds, nil
 }
 
-func tripsShapeIdMapped(trips []Trip) (groupedTrips [][]Trip) {
+func tripsShapeIdMapped(trips []Trip) (groupedTrips [][]Trip, shapeIds []string) {
 	for _, trip := range trips {
 		found := false
 		for i := range groupedTrips {
@@ -91,10 +116,11 @@ func tripsShapeIdMapped(trips []Trip) (groupedTrips [][]Trip) {
 			}
 		}
 		if !found {
+			shapeIds = append(shapeIds, trip.ShapeId)
 			groupedTrips = append(groupedTrips, []Trip{trip})
 		}
 	}
-	return groupedTrips
+	return groupedTrips, shapeIds
 }
 
 func getTripHeadsignAndDirection(trips [][]Trip) (headsign []string, direction []int){
@@ -106,21 +132,15 @@ func getTripHeadsignAndDirection(trips [][]Trip) (headsign []string, direction [
 }
 
 func getTripsShapeServiceIds(shapeIdsMapped [][]Trip) (serviceIds []int) {
-	for _, value := range shapeIdsMapped{
-		for _, v := range value {
-			serviceIds = append(serviceIds, v.ServiceId)
-			break
-		}
+	for _, trip := range shapeIdsMapped{
+		serviceIds = append(serviceIds, trip[0].ServiceId)
 	}
 	return serviceIds
 }
 
 func getTripsShapeRouteId(shapeIdsMapped [][]Trip) (routeIds []string) {
-	for _, value := range shapeIdsMapped{
-		for _, v := range value {
-			routeIds = append(routeIds, v.RouteId)
-			break
-		}
+	for _, trip := range shapeIdsMapped{
+		routeIds = append(routeIds, trip[0].RouteId)
 	}
 	return routeIds
 }

@@ -15,7 +15,7 @@ type StopInformation struct {
 	ArrivalTime      	[]string `json:"arrivalTimes"`
 }
 
-func CreateStopsSchedule(stopId string) (stopSchedule StopSchedule, err error) {
+func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 	stop, err := createStop(stopId)
 	if err != nil {
 		return StopSchedule{}, err
@@ -31,28 +31,40 @@ func CreateStopsSchedule(stopId string) (stopSchedule StopSchedule, err error) {
 	if err != nil {
 		return StopSchedule{}, err
 	}
-	mappedTripShape := tripsShapeIdMapped(trips)
+
+	mappedTripShape, _ := tripsShapeIdMapped(trips)
 
 	tripRouteIds := getTripsShapeRouteId(mappedTripShape)
 	serviceIds := getTripsShapeServiceIds(mappedTripShape)
 
 	sName, lName, routeType, err := convertTripIdToRoutesShortLongNameAndType(tripRouteIds)
-	if err != nil{
+	if err != nil {
 		return StopSchedule{}, err
 	}
+
 	calWorkDays, err := convertServiceIdToCalendarDays(serviceIds)
-	if err != nil{
+	if err != nil {
 		return StopSchedule{}, err
 	}
+
 	arrivalTimes, err := ConvertTripIdToStopTimesArrivalTime(mappedTripShape, stopTimes)
-	if err != nil{
+	if err != nil {
 		return StopSchedule{}, err
 	}
 
 	tripHeadsign, direction := getTripHeadsignAndDirection(mappedTripShape)
 	routeLongName := createRouteLongName(lName, tripHeadsign, direction)
 
-	stopSchedule.StopName = getStopName(stop)
+	stopSchedule := assembleStopSchedule(stop, mappedTripShape, sName, routeLongName, routeType, calWorkDays, arrivalTimes)
+
+	return stopSchedule, nil
+}
+
+func assembleStopSchedule(stop Stop, mappedTripShape [][]Trip, sName, routeLongName, routeType []string, calWorkDays [][]int, arrivalTimes [][]string) StopSchedule {
+	stopSchedule := StopSchedule{
+		StopName: getStopName(stop),
+	}
+
 	for i := 0; i < len(mappedTripShape); i++ {
 		info := StopInformation{
 			RouteShortName:   sName[i],
@@ -63,7 +75,8 @@ func CreateStopsSchedule(stopId string) (stopSchedule StopSchedule, err error) {
 		}
 		stopSchedule.StopInformations = append(stopSchedule.StopInformations, info)
 	}
-	return stopSchedule, nil
+
+	return stopSchedule
 }
 
 func createStop(stopId string) (Stop, error) {
@@ -98,7 +111,7 @@ func createTripsByStopTimeTripIds(tripIds []string) ([]Trip, error) {
 		return nil, err
 	}
 
-	tripsByIds, err := getTripsByIds(tripIds, Trips)
+	tripsByIds, err := getTripsByTripIds(tripIds, Trips)
 	if err != nil{
 		return nil, err
 	}
