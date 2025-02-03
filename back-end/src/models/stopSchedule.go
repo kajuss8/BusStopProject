@@ -1,6 +1,9 @@
 package models
 
-import "strings"
+import (
+	"strings"
+	"time"
+)
 
 type StopSchedule struct {
 	StopName         string            `json:"stopName"`
@@ -42,7 +45,7 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 		return StopSchedule{}, err
 	}
 
-	calWorkDays, err := convertServiceIdToCalendarDays(serviceIds)
+	calWorkDays, startDate, endDate, err := convertServiceIdToCalendarDays(serviceIds)
 	if err != nil {
 		return StopSchedule{}, err
 	}
@@ -55,25 +58,28 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 	tripHeadsign, direction := getTripHeadsignAndDirection(mappedTripShape)
 	routeLongName := createRouteLongName(lName, tripHeadsign, direction)
 
-	stopSchedule := assembleStopSchedule(stop, mappedTripShape, sName, routeLongName, routeType, calWorkDays, arrivalTimes)
+	stopSchedule := assembleStopSchedule(stop, mappedTripShape, sName, routeLongName, routeType, calWorkDays, arrivalTimes, startDate, endDate)
 
 	return stopSchedule, nil
 }
-
-func assembleStopSchedule(stop Stop, mappedTripShape [][]Trip, sName, routeLongName, routeType []string, calWorkDays [][]int, arrivalTimes [][]string) StopSchedule {
+func assembleStopSchedule(stop Stop, mappedTripShape [][]Trip, sName, routeLongName, routeType []string, calWorkDays [][]int, arrivalTimes [][]string, startDate, endDate []time.Time) StopSchedule {
 	stopSchedule := StopSchedule{
 		StopName: getStopName(stop),
 	}
 
+	currentDate := time.Now()
+
 	for i := 0; i < len(mappedTripShape); i++ {
-		info := StopInformation{
-			RouteShortName:   sName[i],
-			RouteLongName:    routeLongName[i],
-			RouteType:        routeType[i],
-			CalendarWorkDays: calWorkDays[i],
-			ArrivalTime:      arrivalTimes[i],
+		if currentDate.After(startDate[i]) && currentDate.Before(endDate[i]) {
+			info := StopInformation{
+				RouteShortName:   sName[i],
+				RouteLongName:    routeLongName[i],
+				RouteType:        routeType[i],
+				CalendarWorkDays: calWorkDays[i],
+				ArrivalTime:      arrivalTimes[i],
+			}
+			stopSchedule.StopInformations = append(stopSchedule.StopInformations, info)
 		}
-		stopSchedule.StopInformations = append(stopSchedule.StopInformations, info)
 	}
 
 	return stopSchedule
