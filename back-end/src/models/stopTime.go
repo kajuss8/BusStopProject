@@ -124,51 +124,27 @@ func OrderStopTimesBySequence(stopTimes [][]StopTime) [][]StopTime {
 	return stopTimes
 }
 
-func GetDepartureTimesByStopIds(stopTimes [][]StopTime, stopIds [][]string) ([][]string) {
-	return nil
-}
-// func GetDepartureTimesByStopIds(stopTimes [][]StopTime, stopIds [][]string) ([][]string, error) {
-// 	var result [][]string
+func GetDepartureTimesByStopIds(stopTimes [][]StopTime) ([][][]string, error) {
+	var result [][][]string
 
-// 	for _, stopTimesSlice := range stopTimes {
-// 		stopIdMap := make(map[string][]string)
-// 		for _, stopTime := range stopTimesSlice {
-// 			stopIdMap[stopTime.StopId] = append(stopIdMap[stopTime.StopId], stopTime.DepartureTime[:5])
-// 		}
-
-// 		for _, stopIdGroup := range stopIds {
-// 			var departureTimes []string
-// 			for _, stopId := range stopIdGroup {
-// 				if times, exists := stopIdMap[stopId]; exists {
-// 					departureTimes = append(departureTimes, times...)
-// 				} else {
-// 					return nil, fmt.Errorf("GetDepartureTimesByStopIds failed: no such stop ID")
-// 				}
-// 			}
-// 			result = append(result, departureTimes)
-// 		}
-// 	}
-
-// 	return result, nil
-// }
-
-func OrderStopTimesByDepartureTime(stopTimes [][]StopTime) [][]StopTime {
-	for i, stopTimesSlice := range stopTimes {
-		timeMap := make(map[string][]StopTime)
+	for _, stopTimesSlice := range stopTimes {
+		stopIdMap := make(map[string][]string)
 		for _, stopTime := range stopTimesSlice {
-			timeMap[stopTime.DepartureTime] = append(timeMap[stopTime.DepartureTime], stopTime)
+			stopIdMap[stopTime.StopId] = append(stopIdMap[stopTime.StopId], stopTime.DepartureTime[:5])
 		}
 
-		var groupedStopTimes []StopTime
+		var groupedDepartureTimes [][]string
+		processedStopIds := make(map[string]bool)
 		for _, stopTime := range stopTimesSlice {
-			if stops, exists := timeMap[stopTime.DepartureTime]; exists {
-				groupedStopTimes = append(groupedStopTimes, stops...)
-				delete(timeMap, stopTime.DepartureTime)
+			if _, exists := processedStopIds[stopTime.StopId]; !exists {
+				groupedDepartureTimes = append(groupedDepartureTimes, stopIdMap[stopTime.StopId])
+				processedStopIds[stopTime.StopId] = true
 			}
 		}
-		stopTimes[i] = groupedStopTimes
+		result = append(result, groupedDepartureTimes)
 	}
-	return stopTimes
+
+	return result, nil
 }
 
 func GetUniqueStopIds(stopTimes [][]StopTime) [][]string {

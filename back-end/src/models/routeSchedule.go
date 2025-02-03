@@ -1,9 +1,11 @@
 package models
 
+import "sort"
+
 type RouteSchedule struct {
 	RouteLongName string
-	ShapeId 	string
-	RouteInfo	[]RouteInformation
+	ShapeId       string
+	RouteInfo     []RouteInformation
 }
 
 type RouteInformation struct {
@@ -47,37 +49,51 @@ func CreateRouteSchedule(routeId string) ([]RouteSchedule, error) {
 		return nil, err
 	}
 
-	routeSchedules, err := buildRouteSchedules(shapeIds, workDays, stopNames, routeLongName)
+	departureTimes, err := GetDepartureTimesByStopIds(stopTimes)
 	if err != nil {
 		return nil, err
 	}
 
-	return routeSchedules, nil
+	return buildRouteSchedules(shapeIds, workDays, stopNames, routeLongName, departureTimes)
 }
 
-func buildRouteSchedules(shapeIds []string, workDays [][]int, stopNames [][]string, routeLongName []string) ([]RouteSchedule, error) {
-	var routeSchedules []RouteSchedule
+func buildRouteSchedules(shapeIds []string, workDays [][]int, stopNames [][]string, routeLongName []string, departureTimes [][][]string) ([]RouteSchedule, error) {
+	shapeIdMap := make(map[string]*RouteSchedule)
 	for i, shapeId := range shapeIds {
-		stopInfo := buildStopInfo(stopNames[i])
-		routeSchedules = append(routeSchedules, RouteSchedule{
-			RouteLongName: routeLongName[i],
-			ShapeId: shapeId,
-			RouteInfo: []RouteInformation{
-				{
-					WorkDays: workDays[i],
-					StopInfo: stopInfo,
-				},
-			},
-		})
+		stopInfo := buildStopInfo(stopNames[i], departureTimes[i])
+		routeInfo := RouteInformation{
+			WorkDays: workDays[i],
+			StopInfo: stopInfo,
+		}
+		if routeSchedule, exists := shapeIdMap[shapeId]; exists {
+			routeSchedule.RouteInfo = append(routeSchedule.RouteInfo, routeInfo)
+		} else {
+			shapeIdMap[shapeId] = &RouteSchedule{
+				RouteLongName: routeLongName[i],
+				ShapeId:       shapeId,
+				RouteInfo:     []RouteInformation{routeInfo},
+			}
+		}
 	}
+
+	routeSchedules := make([]RouteSchedule, 0, len(shapeIdMap))
+	for _, routeSchedule := range shapeIdMap {
+		routeSchedules = append(routeSchedules, *routeSchedule)
+	}
+
+	sort.Slice(routeSchedules, func(i, j int) bool {
+		return routeSchedules[i].ShapeId < routeSchedules[j].ShapeId
+	})
+
 	return routeSchedules, nil
 }
 
-func buildStopInfo(stopNames []string) []StopInfo {
+func buildStopInfo(stopNames []string, departureTimes [][]string) []StopInfo {
 	var stopInfo []StopInfo
-	for _, stopName := range stopNames {
+	for i, stopName := range stopNames {
 		stopInfo = append(stopInfo, StopInfo{
-			StopName: stopName,
+			StopName:      stopName,
+			DepartureTime: departureTimes[i],
 		})
 	}
 	return stopInfo
@@ -86,7 +102,7 @@ func buildStopInfo(stopNames []string) []StopInfo {
 func createDifferentRouteLongName(trips [][]Trip, routeId string) ([]string, error) {
 	tripHeadsign, direction := getTripHeadsignAndDirection(trips)
 	routeName, err := getRouteLongNameById(routeId)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
@@ -94,6 +110,6 @@ func createDifferentRouteLongName(trips [][]Trip, routeId string) ([]string, err
 	for range trips {
 		routeNames = append(routeNames, routeName)
 	}
-	
+
 	return createRouteLongName(routeNames, tripHeadsign, direction), nil
 }
