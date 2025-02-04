@@ -4,6 +4,7 @@ import (
 	"busProject/src/handleFiles"
 	"fmt"
 	"strconv"
+	"time"
 )
 
 type DayServiceAvailability int
@@ -16,8 +17,8 @@ const (
 type Calendar struct {
 	ServiceId       int			`json:"serviceId"`
 	WeekDaysService []int		`json:"weekServices"`
-	StartDate       string		`json:"startDate"`
-	EndDate         string		`json:"endDate"`
+	StartDate       time.Time		`json:"startDate"`
+	EndDate         time.Time		`json:"endDate"`
 }
 
 const CalendarFileName = "calendar.txt"
@@ -37,8 +38,14 @@ func getAllCalendars() (calendarsResult []Calendar, err error) {
 		friday, _ := strconv.Atoi(calendar[5])
 		saturday, _ := strconv.Atoi(calendar[6])
 		sunday, _ := strconv.Atoi(calendar[7])
-		startDate := calendar[8]
-		endDate := calendar[9]
+		startDate, err := time.Parse("20060102", calendar[8])
+		if err != nil {
+			return nil, fmt.Errorf("GetAllCalendars failed to parse startDate: %w", err)
+		}
+		endDate, err := time.Parse("20060102", calendar[9])
+		if err != nil {
+			return nil, fmt.Errorf("GetAllCalendars failed to parse endDate: %w", err)
+		}
 
 		calendarsResult = append(calendarsResult, Calendar{
 			ServiceId: serviceId,
@@ -57,23 +64,25 @@ func getAllCalendars() (calendarsResult []Calendar, err error) {
 	return calendarsResult, nil
 }
 
-func convertServiceIdToCalendarDays(serviceIds []int) (calendarDays [][]int, err error){
+func convertServiceIdToCalendarDays(serviceIds []int) (calendarDays [][]int, startDates, endDates []time.Time, err error) {
 	calendars, err := getAllCalendars()
 	if err != nil {
-		return nil, err
+		return nil, nil, nil, err
 	}
 
-	calendarMap := make(map[int][]int, len(calendars))
+	calendarMap := make(map[int]Calendar, len(calendars))
 	for _, calendar := range calendars {
-		calendarMap[calendar.ServiceId] = calendar.WeekDaysService
+		calendarMap[calendar.ServiceId] = calendar
 	}
 
 	for _, serviceId := range serviceIds {
-		if days, exists := calendarMap[serviceId]; exists {
-			calendarDays = append(calendarDays, days)
+		if calendar, exists := calendarMap[serviceId]; exists {
+			calendarDays = append(calendarDays, calendar.WeekDaysService)
+			startDates = append(startDates, calendar.StartDate)
+			endDates = append(endDates, calendar.EndDate)
 		} else {
-			return nil, fmt.Errorf("ConvertServiceIdToCalendarDays failes: no such service ID")
+			return nil, nil, nil, fmt.Errorf("ConvertServiceIdToCalendarDays failed: no such service ID")
 		}
 	}
-	return calendarDays, nil
+	return calendarDays, startDates, endDates, nil
 }

@@ -50,25 +50,23 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 		return StopSchedule{}, err
 	}
 
-	arrivalTimes, err := ConvertTripIdToStopTimesArrivalTime(mappedTripShape, stopTimes)
+	arrivalTimes, err := convertTripIdToStopTimesArrivalTime(mappedTripShape, stopTimes)
 	if err != nil {
 		return StopSchedule{}, err
 	}
 
 	tripHeadsign, direction := getTripHeadsignAndDirection(mappedTripShape)
 	routeLongName := createRouteLongName(lName, tripHeadsign, direction)
-
-	stopSchedule := assembleStopSchedule(stop, mappedTripShape, sName, routeLongName, routeType, calWorkDays, arrivalTimes, startDate, endDate)
+	currentDate := time.Now()
+	stopSchedule := assembleStopSchedule(stop, mappedTripShape, sName, routeLongName, routeType, calWorkDays, arrivalTimes, startDate, endDate, currentDate)
 
 	return stopSchedule, nil
 }
-func assembleStopSchedule(stop Stop, mappedTripShape [][]Trip, sName, routeLongName, routeType []string, calWorkDays [][]int, arrivalTimes [][]string, startDate, endDate []time.Time) StopSchedule {
+func assembleStopSchedule(stop Stop, mappedTripShape [][]Trip, sName, routeLongName, routeType []string, calWorkDays [][]int, arrivalTimes [][]string, startDate, endDate []time.Time, currentDate time.Time) StopSchedule {
 	stopSchedule := StopSchedule{
 		StopName: getStopName(stop),
 	}
-
-	currentDate := time.Now()
-
+	
 	for i := 0; i < len(mappedTripShape); i++ {
 		if currentDate.After(startDate[i]) && currentDate.Before(endDate[i]) {
 			info := StopInformation{
@@ -95,7 +93,7 @@ func createStop(stopId string) (Stop, error) {
 }
 
 func createStopTimes(stopId string) ([]StopTime, error) {
-	stopTimes, err := GetStopTimesByStopId(stopId)
+	stopTimes, err := getStopTimesByStopId(stopId)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +101,7 @@ func createStopTimes(stopId string) ([]StopTime, error) {
 }
 
 func takeStopTimeTripIds(stopTimes []StopTime) (tripIds []string) {
-	tripIds = GetTripIds(stopTimes)
+	tripIds = getTripIdsFromStopTime(stopTimes)
 	return tripIds
 }
 

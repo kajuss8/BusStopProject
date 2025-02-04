@@ -36,7 +36,7 @@ type StopTime struct {
 
 const stopTimeFileName = "stop_times.txt"
 
-func GetAllStopTimes() (stopTimesResult []StopTime, err error){
+func getAllStopTimes() (stopTimesResult []StopTime, err error){
 	stopTimes, err := handleFiles.ReadFile(filepath + stopTimeFileName)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllStopTimes failed: %w", err)
@@ -64,8 +64,8 @@ func GetAllStopTimes() (stopTimesResult []StopTime, err error){
 	return stopTimesResult, nil
 }
 
-func GetStopTimesByStopId(stopId string) (stopTimesById []StopTime, err error) {
-	stopTimes, err := GetAllStopTimes()
+func getStopTimesByStopId(stopId string) (stopTimesById []StopTime, err error) {
+	stopTimes, err := getAllStopTimes()
 	if err != nil {
 		return nil, err
 	}
@@ -82,8 +82,8 @@ func GetStopTimesByStopId(stopId string) (stopTimesById []StopTime, err error) {
 	return stopTimesById, nil
 }
 
-func GetStopTimesByTripIds(tripIds [][]string) (stopTimesByTripIds [][]StopTime, err error) {
-	allStopTimes, err := GetAllStopTimes()
+func getStopTimesByTripIds(tripIds [][]string) (stopTimesByTripIds [][]StopTime, err error) {
+	allStopTimes, err := getAllStopTimes()
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func GetStopTimesByTripIds(tripIds [][]string) (stopTimesByTripIds [][]StopTime,
 	return stopTimesByTripIds, nil
 }
 
-func OrderStopTimesBySequence(stopTimes [][]StopTime) [][]StopTime {
+func orderStopTimesBySequence(stopTimes [][]StopTime) [][]StopTime {
 	for i, stopTimesSlice := range stopTimes {
 		sequenceMap := make(map[int][]StopTime)
 		for _, stopTime := range stopTimesSlice {
@@ -124,7 +124,7 @@ func OrderStopTimesBySequence(stopTimes [][]StopTime) [][]StopTime {
 	return stopTimes
 }
 
-func GetDepartureTimesByStopIds(stopTimes [][]StopTime) ([][][]string, error) {
+func getDepartureTimesByStopIds(stopTimes [][]StopTime) ([][][]string, error) {
 	var result [][][]string
 
 	for _, stopTimesSlice := range stopTimes {
@@ -147,7 +147,7 @@ func GetDepartureTimesByStopIds(stopTimes [][]StopTime) ([][][]string, error) {
 	return result, nil
 }
 
-func GetUniqueStopIds(stopTimes [][]StopTime) [][]string {
+func getUniqueStopIds(stopTimes [][]StopTime) [][]string {
 	var uniqueStopIds [][]string
 
 	for _, stopTimesSlice := range stopTimes {
@@ -165,21 +165,14 @@ func GetUniqueStopIds(stopTimes [][]StopTime) [][]string {
 	return uniqueStopIds
 }
 
-func GetArrivalTimes(stopTimes []StopTime)  (arrivalTimes []string) {
-	for _, stopTime := range stopTimes {
-		arrivalTimes = append(arrivalTimes, stopTime.ArrivalTime[:5])
-	}
-	return arrivalTimes
-}
-
-func GetTripIds(stopTimes []StopTime) (tripIds []string) {
+func getTripIdsFromStopTime(stopTimes []StopTime) (tripIds []string) {
 	for _, stopTime := range stopTimes {
 		tripIds = append(tripIds, stopTime.TripId)
 	}
 	return tripIds
 }
 
-func ConvertTripIdToStopTimesArrivalTime(mappedTrip [][]Trip, stopTimesByStopId []StopTime) (arrivalTimes [][]string, err error) {
+func convertTripIdToStopTimesArrivalTime(mappedTrip [][]Trip, stopTimesByStopId []StopTime) (arrivalTimes [][]string, err error) {
 	stopTimeMap := make(map[string]string, len(stopTimesByStopId))
 	for _, stopTime := range stopTimesByStopId {
 		stopTimeMap[stopTime.TripId] = stopTime.ArrivalTime
@@ -197,26 +190,4 @@ func ConvertTripIdToStopTimesArrivalTime(mappedTrip [][]Trip, stopTimesByStopId 
 		arrivalTimes = append(arrivalTimes, times)
 	}
     return arrivalTimes, nil
-}
-
-func GetAllDepartureTimes(stopTimesByTripIds [][]StopTime) (allDepartureTimes [][]string) {
-	for _, stopTimes := range stopTimesByTripIds {
-		var DepartureTimes []string
-		for _, stopTime := range stopTimes {
-			DepartureTimes = append(DepartureTimes, stopTime.DepartureTime[:5])
-		}
-		allDepartureTimes = append(allDepartureTimes, DepartureTimes)
-	}
-	return allDepartureTimes
-}
-
-func GetAllStopIds(stopTimesByTripIds [][]StopTime) (allStopIds [][]string) {
-	for _, stopTimes := range stopTimesByTripIds {
-		var stopIds []string
-		for _, stopTime := range stopTimes {
-			stopIds = append(stopIds, stopTime.StopId)
-		}
-		allStopIds = append(allStopIds, stopIds)
-	}
-	return allStopIds
 }

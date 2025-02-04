@@ -83,7 +83,7 @@ func getStopName(stop Stop) string {
 	return stop.StopName
 }
 
-func GetStopNames(allStopIds [][]string) (stopNames [][]string, err error) {
+func getStopNames(allStopIds [][]string) (stopNames [][]string, err error) {
 	stops, err := getAllStops()
 	if err != nil {
 		return nil, err

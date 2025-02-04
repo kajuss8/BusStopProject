@@ -1,6 +1,9 @@
 package models
 
-import "sort"
+import (
+	"sort"
+	"time"
+)
 
 type RouteSchedule struct {
 	RouteLongName string
@@ -32,46 +35,49 @@ func CreateRouteSchedule(routeId string) ([]RouteSchedule, error) {
 	}
 
 	serviceIds := getTripsShapeServiceIds(tripsmappedByShapeIds)
-	workDays, err := convertServiceIdToCalendarDays(serviceIds)
+	workDays, startDates, endDates, err := convertServiceIdToCalendarDays(serviceIds)
 	if err != nil {
 		return nil, err
 	}
 
-	stopTimes, err := GetStopTimesByTripIds(tripIds)
+	stopTimes, err := getStopTimesByTripIds(tripIds)
 	if err != nil {
 		return nil, err
 	}
-	stopTimes = OrderStopTimesBySequence(stopTimes)
+	stopTimes = orderStopTimesBySequence(stopTimes)
 
-	stopIds := GetUniqueStopIds(stopTimes)
-	stopNames, err := GetStopNames(stopIds)
-	if err != nil {
-		return nil, err
-	}
-
-	departureTimes, err := GetDepartureTimesByStopIds(stopTimes)
+	stopIds := getUniqueStopIds(stopTimes)
+	stopNames, err := getStopNames(stopIds)
 	if err != nil {
 		return nil, err
 	}
 
-	return buildRouteSchedules(shapeIds, workDays, stopNames, routeLongName, departureTimes)
+	departureTimes, err := getDepartureTimesByStopIds(stopTimes)
+	if err != nil {
+		return nil, err
+	}
+
+	currentDate := time.Now()
+	return buildRouteSchedules(shapeIds, workDays, stopNames, routeLongName, departureTimes, startDates, endDates, currentDate)
 }
 
-func buildRouteSchedules(shapeIds []string, workDays [][]int, stopNames [][]string, routeLongName []string, departureTimes [][][]string) ([]RouteSchedule, error) {
+func buildRouteSchedules(shapeIds []string, workDays [][]int, stopNames [][]string, routeLongName []string, departureTimes [][][]string, startDates, endDates []time.Time, currentDate time.Time) ([]RouteSchedule, error) {
 	shapeIdMap := make(map[string]*RouteSchedule)
 	for i, shapeId := range shapeIds {
-		stopInfo := buildStopInfo(stopNames[i], departureTimes[i])
-		routeInfo := RouteInformation{
-			WorkDays: workDays[i],
-			StopInfo: stopInfo,
-		}
-		if routeSchedule, exists := shapeIdMap[shapeId]; exists {
-			routeSchedule.RouteInfo = append(routeSchedule.RouteInfo, routeInfo)
-		} else {
-			shapeIdMap[shapeId] = &RouteSchedule{
-				RouteLongName: routeLongName[i],
-				ShapeId:       shapeId,
-				RouteInfo:     []RouteInformation{routeInfo},
+		if currentDate.After(startDates[i]) && currentDate.Before(endDates[i]){
+				stopInfo := buildStopInfo(stopNames[i], departureTimes[i])
+				routeInfo := RouteInformation{
+				WorkDays: workDays[i],
+				StopInfo: stopInfo,
+			}
+			if routeSchedule, exists := shapeIdMap[shapeId]; exists {
+				routeSchedule.RouteInfo = append(routeSchedule.RouteInfo, routeInfo)
+			} else {
+					shapeIdMap[shapeId] = &RouteSchedule{
+					RouteLongName: routeLongName[i],
+					ShapeId:       shapeId,
+					RouteInfo:     []RouteInformation{routeInfo},
+				}
 			}
 		}
 	}
