@@ -91,24 +91,24 @@ func convertTripIdToRoutesShortLongNameAndType(routeIds []string) (shortName, lo
     return shortName, longName, convertRouteTypeNumberToLetter(routeType), nil
 }
 
-func getRouteLongNameById(routeId string) (string, error) {
-	routes, err := getAllRoutes()
-	if err != nil {
-		return "", err
-	}
+// func getRouteLongNameById(routeId string) (string, error) {
+// 	routes, err := getAllRoutes()
+// 	if err != nil {
+// 		return "", err
+// 	}
 
-	routeMap := make(map[string]string, len(routes))
-	for _, route := range routes {
-		routeMap[route.RouteId] = route.RouteLongName
-	}
+// 	routeMap := make(map[string]string, len(routes))
+// 	for _, route := range routes {
+// 		routeMap[route.RouteId] = route.RouteLongName
+// 	}
 
-	longName, exists := routeMap[routeId]
-	if !exists {
-		return "", fmt.Errorf("route with ID %s not found", routeId)
-	}
+// 	longName, exists := routeMap[routeId]
+// 	if !exists {
+// 		return "", fmt.Errorf("route with ID %s not found", routeId)
+// 	}
 
-	return longName, nil
-}
+// 	return longName, nil
+// }
 
 func convertRouteTypeNumberToLetter(routeTypes []TransportType) (routeLetter []string) {
 	for _, routeType := range routeTypes{

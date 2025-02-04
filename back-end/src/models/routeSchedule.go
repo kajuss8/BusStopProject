@@ -29,10 +29,10 @@ func CreateRouteSchedule(routeId string) ([]RouteSchedule, error) {
 	tripsmappedByShapeIds, shapeIds := tripsShapeIdMapped(trips)
 	tripIds := getTripIds(tripsmappedByShapeIds)
 
-	routeLongName, err := createDifferentRouteLongName(tripsmappedByShapeIds, routeId)
-	if err != nil {
-		return nil, err
-	}
+	// routeLongName, err := createDifferentRouteLongName(tripsmappedByShapeIds, routeId)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	serviceIds := getTripsShapeServiceIds(tripsmappedByShapeIds)
 	workDays, startDates, endDates, err := convertServiceIdToCalendarDays(serviceIds)
@@ -48,6 +48,11 @@ func CreateRouteSchedule(routeId string) ([]RouteSchedule, error) {
 
 	stopIds := getUniqueStopIds(stopTimes)
 	stopNames, err := getStopNames(stopIds)
+	if err != nil {
+		return nil, err
+	}
+
+	routeLongName, err := createRoutesLongName(stopIds)
 	if err != nil {
 		return nil, err
 	}
@@ -105,17 +110,35 @@ func buildStopInfo(stopNames []string, departureTimes [][]string) []StopInfo {
 	return stopInfo
 }
 
-func createDifferentRouteLongName(trips [][]Trip, routeId string) ([]string, error) {
-	tripHeadsign, direction := getTripHeadsignAndDirection(trips)
-	routeName, err := getRouteLongNameById(routeId)
-	if err != nil {
-		return nil, err
+// func createDifferentRouteLongName(trips [][]Trip, routeId string) ([]string, error) {
+// 	tripHeadsign, direction := getTripHeadsignAndDirection(trips)
+// 	routeName, err := getRouteLongNameById(routeId)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	var routeNames []string
+// 	for range trips {
+// 		routeNames = append(routeNames, routeName)
+// 	}
+
+// 	return createRouteLongName(routeNames, tripHeadsign, direction), nil
+// }
+
+func createRoutesLongName(stopIds [][]string) (routeLName []string, err error) {
+	for _, stopIdSlice := range stopIds{
+		firstStopIdName, err := getStopNameById(stopIdSlice[0])
+		if err != nil {
+			return nil, err
+		}
+		lastStopIdName, err := getStopNameById(stopIdSlice[len(stopIdSlice)-1])
+		if err != nil {
+			return nil, err
+		}
+		temp := firstStopIdName + " - " + lastStopIdName
+
+		routeLName = append(routeLName, temp)
 	}
 
-	var routeNames []string
-	for range trips {
-		routeNames = append(routeNames, routeName)
-	}
-
-	return createRouteLongName(routeNames, tripHeadsign, direction), nil
+	return routeLName, nil
 }

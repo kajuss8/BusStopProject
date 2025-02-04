@@ -79,6 +79,20 @@ func getStopById(stopId string) (Stop, error) {
 	return Stop{}, fmt.Errorf("GetStopId failed: no such stop ID")
 }
 
+func getStopNameById(stopId string) (string, error) {
+	stops, err := getAllStops()
+	if err != nil {
+		return "", err
+	}
+
+	for _, stop := range stops {
+		if stop.StopId == stopId {
+			return stop.StopName, nil
+		}
+	}
+	return "", fmt.Errorf("getStopNameById failed: no such stop ID")
+}
+
 func getStopName(stop Stop) string {
 	return stop.StopName
 }
