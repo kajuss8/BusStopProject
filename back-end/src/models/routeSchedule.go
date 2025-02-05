@@ -6,19 +6,19 @@ import (
 )
 
 type RouteSchedule struct {
-	RouteLongName string
-	ShapeId       string
-	RouteInfo     []RouteInformation
+	RouteLongName string	`json:"routeLongName"`
+	ShapeId       string	`json:"shapeId"`
+	RouteInfo     []RouteInformation	`json:"routeInfo"`
 }
 
 type RouteInformation struct {
-	WorkDays []int
-	StopInfo []StopInfo
+	WorkDays []int	`json:"workDays"`
+	StopInfo []StopInfo	`json:"stopInfo"`
 }
 
 type StopInfo struct {
-	StopName      string
-	DepartureTime []string
+	StopName      string	`json:"stopName"`
+	DepartureTime []string	`json:"departureTime"`
 }
 
 func CreateRouteSchedule(routeId string) ([]RouteSchedule, error) {

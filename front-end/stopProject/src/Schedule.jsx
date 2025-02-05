@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 function Schedule() {
-  const [stopData, setData] = useState(null);
+  const [stopData, setStopData] = useState(null);
+  const [routeData, setRouteData] = useState(null);
   const [stopId, setStopId] = useState('');
   const [routeId, setRouteId] = useState('');
   
@@ -19,7 +20,7 @@ function Schedule() {
       axios.get(`http://localhost:8080/StopSchedle/${stopId}`)
         .then(function (response) {
           console.log("Hello");
-          setData(response.data.stopSchedule);
+          setStopData(response.data.stopSchedule);
         })
         .catch(function (error) {
           console.log(error);
@@ -32,7 +33,8 @@ function Schedule() {
       axios.get(`http://localhost:8080/RouteSchedule/${routeId}`)
         .then(function (response) {
           console.log("Hello");
-          setData(response.data.stopSchedule);
+          console.log(response.data)
+          setRouteData(response.data.routeSchedules);
         })
         .catch(function (error) {
           console.log(error);
@@ -72,7 +74,37 @@ function Schedule() {
       ) : (
         <p>Press the button to load stop information.</p>
       )}
+
+
+      {routeData ? (
+              <div>
+                {routeData.map((routeSchedule, _) => (
+                  <div> {routeSchedule.routeLongName} 
+                        {routeSchedule.shapeId}
+                        {routeSchedule.routeInfo.map((routeInfo, _) => (
+                          <div>
+                            <div>{routeInfo.workDays}</div>
+                            {routeInfo.stopInfo.map((stopInfo, _) => (
+                              <div>
+                                <div>{stopInfo.stopName}</div>
+                                <div>{stopInfo.departureTime.join(`, `)}</div>
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                  </div>
+                  
+                ))}
+               
+              </div>
+            ) : (
+              <p>Press the button to load stop information.</p>
+            )}
+
+
     </div>
+
+    
     
   );
 }
