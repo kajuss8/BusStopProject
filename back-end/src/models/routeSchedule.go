@@ -12,7 +12,7 @@ type RouteSchedule struct {
 }
 
 type RouteInformation struct {
-	WorkDays []int	`json:"workDays"`
+	WorkDays []string	`json:"workDays"`
 	StopInfo []StopInfo	`json:"stopInfo"`
 }
 
@@ -39,6 +39,7 @@ func CreateRouteSchedule(routeId string) ([]RouteSchedule, error) {
 	if err != nil {
 		return nil, err
 	}
+	namedWorkDays := createWorkDaysWordsSchedule(workDays)
 
 	stopTimes, err := getStopTimesByTripIds(tripIds)
 	if err != nil {
@@ -63,10 +64,10 @@ func CreateRouteSchedule(routeId string) ([]RouteSchedule, error) {
 	}
 
 	currentDate := time.Now()
-	return buildRouteSchedules(shapeIds, workDays, stopNames, routeLongName, departureTimes, startDates, endDates, currentDate)
+	return buildRouteSchedules(shapeIds, namedWorkDays, stopNames, routeLongName, departureTimes, startDates, endDates, currentDate)
 }
 
-func buildRouteSchedules(shapeIds []string, workDays [][]int, stopNames [][]string, routeLongName []string, departureTimes [][][]string, startDates, endDates []time.Time, currentDate time.Time) ([]RouteSchedule, error) {
+func buildRouteSchedules(shapeIds []string, workDays [][]string, stopNames [][]string, routeLongName []string, departureTimes [][][]string, startDates, endDates []time.Time, currentDate time.Time) ([]RouteSchedule, error) {
 	shapeIdMap := make(map[string]*RouteSchedule)
 	for i, shapeId := range shapeIds {
 		if currentDate.After(startDates[i]) && currentDate.Before(endDates[i]){
@@ -141,4 +142,11 @@ func createRoutesLongName(stopIds [][]string) (routeLName []string, err error) {
 	}
 
 	return routeLName, nil
+}
+
+func createWorkDaysWordsSchedule(workDays [][]DayServiceAvailability) (result [][]string) {
+	for _, workday := range workDays {
+		result = append(result, convertCalendarDaysToWords(workday))
+	}
+	return result
 }

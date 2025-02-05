@@ -14,7 +14,7 @@ type StopInformation struct {
 	RouteShortName 		string 	 `json:"routeShortName"`
 	RouteLongName  		string 	 `json:"routeLongName"`
 	RouteType			string 	 `json:"routeType"`
-	CalendarWorkDays 	[]int    `json:"workDays"`
+	CalendarWorkDays 	[]string    `json:"workDays"`
 	ArrivalTime      	[]string `json:"arrivalTimes"`
 }
 
@@ -49,6 +49,7 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 	if err != nil {
 		return StopSchedule{}, err
 	}
+	namedWorkDays := createWorkDaysLetterSchedule(calWorkDays)
 
 	arrivalTimes, err := convertTripIdToStopTimesArrivalTime(mappedTripShape, stopTimes)
 	if err != nil {
@@ -57,12 +58,14 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 
 	tripHeadsign, direction := getTripHeadsignAndDirection(mappedTripShape)
 	routeLongName := createRouteLongName(lName, tripHeadsign, direction)
+
 	currentDate := time.Now()
-	stopSchedule := assembleStopSchedule(stop, mappedTripShape, sName, routeLongName, routeType, calWorkDays, arrivalTimes, startDate, endDate, currentDate)
+	stopSchedule := assembleStopSchedule(stop, mappedTripShape, sName, routeLongName, routeType, namedWorkDays, arrivalTimes, startDate, endDate, currentDate)
 
 	return stopSchedule, nil
 }
-func assembleStopSchedule(stop Stop, mappedTripShape [][]Trip, sName, routeLongName, routeType []string, calWorkDays [][]int, arrivalTimes [][]string, startDate, endDate []time.Time, currentDate time.Time) StopSchedule {
+
+func assembleStopSchedule(stop Stop, mappedTripShape [][]Trip, sName, routeLongName, routeType []string, calWorkDays [][]string, arrivalTimes [][]string, startDate, endDate []time.Time, currentDate time.Time) StopSchedule {
 	stopSchedule := StopSchedule{
 		StopName: getStopName(stop),
 	}
@@ -137,3 +140,11 @@ func createRouteLongName(lName []string, tHeadSign []string, direction []int) (r
 	}
 	return routeLongName
 }
+
+func createWorkDaysLetterSchedule(workDays [][]DayServiceAvailability) (result [][]string) {
+	for _, workday := range workDays {
+		result = append(result, convertCalendarDaysToLetters(workday))
+	}
+	return result
+}
+

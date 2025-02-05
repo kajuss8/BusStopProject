@@ -16,7 +16,7 @@ const (
 
 type Calendar struct {
 	ServiceId       int			`json:"serviceId"`
-	WeekDaysService []int		`json:"weekServices"`
+	WeekDaysService []DayServiceAvailability		`json:"weekServices"`
 	StartDate       time.Time		`json:"startDate"`
 	EndDate         time.Time		`json:"endDate"`
 }
@@ -49,14 +49,14 @@ func getAllCalendars() (calendarsResult []Calendar, err error) {
 
 		calendarsResult = append(calendarsResult, Calendar{
 			ServiceId: serviceId,
-			WeekDaysService: []int{
-				monday,
-				tuesday,
-				wednesday,
-				thursday,
-				friday,
-				saturday,
-				sunday},
+			WeekDaysService: []DayServiceAvailability{
+				DayServiceAvailability(monday),
+				DayServiceAvailability(tuesday),
+				DayServiceAvailability(wednesday),
+				DayServiceAvailability(thursday),
+				DayServiceAvailability(friday),
+				DayServiceAvailability(saturday),
+				DayServiceAvailability(sunday)},
 			StartDate: startDate,
 			EndDate:   endDate,
 		})
@@ -64,7 +64,7 @@ func getAllCalendars() (calendarsResult []Calendar, err error) {
 	return calendarsResult, nil
 }
 
-func convertServiceIdToCalendarDays(serviceIds []int) (calendarDays [][]int, startDates, endDates []time.Time, err error) {
+func convertServiceIdToCalendarDays(serviceIds []int) (calendarDays [][]DayServiceAvailability, startDates, endDates []time.Time, err error) {
 	calendars, err := getAllCalendars()
 	if err != nil {
 		return nil, nil, nil, err
@@ -85,4 +85,30 @@ func convertServiceIdToCalendarDays(serviceIds []int) (calendarDays [][]int, sta
 		}
 	}
 	return calendarDays, startDates, endDates, nil
+}
+
+func convertCalendarDaysToLetters(workDays []DayServiceAvailability) (result []string) {
+	days := []string{"P", "A", "T", "K", "P", "Š", "S"}
+	
+	for i, workDay := range workDays {
+		if workDay == ServiceAvailable{
+			result = append(result, days[i])
+		}else {
+			result = append(result, "0")
+		}
+	}
+
+	return result
+}
+
+func convertCalendarDaysToWords(workDays []DayServiceAvailability) (result []string) {
+	days := []string{"pirmadienis", "antradienis", "trečiadienis", "ketvirtadienis", "penktadienis", "šeštadienis", "sekmadienis"}
+
+	for i, workDay := range workDays {
+		if workDay == ServiceAvailable{
+			result = append(result, days[i])
+		}
+	}
+
+	return result
 }
