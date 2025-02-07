@@ -25,8 +25,8 @@ function Schedule() {
       await axios
         .get(`http://localhost:8080/StopSchedle/${stopId}`)
         .then(function (response) {
-          console.log("helo")
           setStopData(response.data.stopSchedule);
+          console.log(response.data.stopSchedule)
           setRouteData(null);
         })
         .catch(function (error) {
@@ -148,7 +148,7 @@ function Schedule() {
             <div className="col-4 ">
               {stopList.map((stop, index) => (
                 <dl key={index} onClick={() => handleStopClick(index)} className={`p-2 ${selectedStopindex === index ? 'bg-light' : ''}`}>
-                  <dt ><a href='#' className="link-dark hover-light link-offset-2 link-underline link-underline-opacity-0 ">{stop.stopName}</a></dt>
+                  <dt ><a href="#" className="link-dark hover-light link-offset-2 link-underline link-underline-opacity-0 ">{stop.stopName}</a></dt>
                 </dl>
               ))}
             </div>

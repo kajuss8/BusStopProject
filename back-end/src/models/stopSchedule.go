@@ -11,6 +11,8 @@ type StopSchedule struct {
 }
 
 type StopInformation struct {
+	ShapeId				string	 `json:"shapeId"`
+	RouteId				string	 `json:"routeId"`
 	RouteShortName 		string 	 `json:"routeShortName"`
 	RouteLongName  		string 	 `json:"routeLongName"`
 	RouteType			string 	 `json:"routeType"`
@@ -35,7 +37,7 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 		return StopSchedule{}, err
 	}
 
-	mappedTripShape, _ := tripsShapeIdMapped(trips)
+	mappedTripShape, shapeId := tripsShapeIdMapped(trips)
 
 	tripRouteIds := getTripsShapeRouteId(mappedTripShape)
 	serviceIds := getTripsShapeServiceIds(mappedTripShape)
@@ -60,12 +62,13 @@ func CreateStopsSchedule(stopId string) (StopSchedule, error) {
 	routeLongName := createRouteLongName(lName, tripHeadsign, direction)
 
 	currentDate := time.Now()
-	stopSchedule := assembleStopSchedule(stop, mappedTripShape, sName, routeLongName, routeType, namedWorkDays, arrivalTimes, startDate, endDate, currentDate)
+	stopSchedule := assembleStopSchedule(stop, mappedTripShape, sName, routeLongName, routeType, namedWorkDays, arrivalTimes, startDate, endDate, currentDate, shapeId, tripRouteIds)
 
 	return stopSchedule, nil
 }
 
-func assembleStopSchedule(stop Stop, mappedTripShape [][]Trip, sName, routeLongName, routeType []string, calWorkDays [][]string, arrivalTimes [][]string, startDate, endDate []time.Time, currentDate time.Time) StopSchedule {
+func assembleStopSchedule(stop Stop, mappedTripShape [][]Trip, sName, routeLongName, routeType []string, calWorkDays [][]string, arrivalTimes [][]string,
+	 startDate, endDate []time.Time, currentDate time.Time, shapeId, routeId []string) StopSchedule {
 	stopSchedule := StopSchedule{
 		StopName: getStopName(stop),
 	}
@@ -73,6 +76,8 @@ func assembleStopSchedule(stop Stop, mappedTripShape [][]Trip, sName, routeLongN
 	for i := 0; i < len(mappedTripShape); i++ {
 		if currentDate.After(startDate[i]) && currentDate.Before(endDate[i]) {
 			info := StopInformation{
+				ShapeId: shapeId[i],
+				RouteId: routeId[i],
 				RouteShortName:   sName[i],
 				RouteLongName:    routeLongName[i],
 				RouteType:        routeType[i],
