@@ -1,7 +1,7 @@
 package main
 
 import (
-	//"busProject/src/handleFiles"
+	"busProject/src/handleFiles"
 	"busProject/src/models"
 	"net/http"
 	"github.com/gin-gonic/gin"
@@ -45,7 +45,7 @@ func getRouteSchedule(ctx *gin.Context) {
 
 func main() {
 
-	//handleFiles.ProcessGtfs()
+	handleFiles.ProcessGtfs()
 
 	router := gin.Default()
 	router.Use(corsMiddleware())

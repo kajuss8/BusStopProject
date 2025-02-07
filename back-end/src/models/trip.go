@@ -75,7 +75,11 @@ func getTripsByRouteId(routeId string) (tripsResult []Trip, err error) {
 			tripsResult = append(tripsResult, trip)
 		}
 	}
-	return tripsResult, err
+	if(tripsResult == nil){
+		return tripsResult, fmt.Errorf("getTripsByRouteId failed: no such trip ID")
+	}
+
+	return tripsResult, nil
 }
 
 func getTripIds(trips [][]Trip) (tripIds [][]string) {
