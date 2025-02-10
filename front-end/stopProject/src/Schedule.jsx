@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -10,15 +10,35 @@ function Schedule() {
   const [stopList, setStopList] = useState(null);
   const [selectedStopindex, setSelectedStopindex] = useState(null);
   const [stopId, setStopId] = useState("");
+  const [stopIdInput, setStopIdInput] = useState("");
   const [routeId, setRouteId] = useState("");
+  const [routeIdInput, setRouteIdInpute] = useState("");
 
-  const handleStopIdInput = (event) => {
-    setStopId(event.target.value);
+  const handleStopIdInput = (e) => {
+    setStopIdInput(e.target.value);
   };
 
-  const handleRouteInput = (event) => {
-    setRouteId(event.target.value);
+  const handleStopIdButtonClick = () => {
+    setStopId(stopIdInput);
   };
+
+  const handleRouteIdInput = (e) => {
+    setRouteIdInpute(e.target.value);
+  };
+
+  const handleRouteIdButtonClick = () => {
+    setRouteId(routeIdInput);
+  };
+
+  useEffect(() => {
+    handleButtonClickStopId();
+    setStopId();
+  }, [stopId]);
+
+  useEffect(() => {
+    handleRouteInputRouteId();
+    setRouteId();
+  }, [routeId]);
 
   const handleButtonClickStopId = async () => {
     if (stopId) {
@@ -26,7 +46,7 @@ function Schedule() {
         .get(`http://localhost:8080/StopSchedle/${stopId}`)
         .then(function (response) {
           setStopData(response.data.stopSchedule);
-          console.log(response.data.stopSchedule)
+          console.log(response.data.stopSchedule);
           setRouteData(null);
         })
         .catch(function (error) {
@@ -40,12 +60,13 @@ function Schedule() {
       await axios
         .get(`http://localhost:8080/RouteSchedule/${routeId}`)
         .then(function (response) {
-          console.log("hello")
+          console.log("hello");
           setRouteData(response.data.routeSchedules);
           setSelectedShape(response.data.routeSchedules[0].shapeId);
           setSelectedRoute(response.data.routeSchedules[0]);
           setStopList(response.data.routeSchedules[0].routeInfo[0].stopInfo);
           setSelectedStopindex(0);
+          console.log(response.data);
           setStopData(null);
         })
         .catch(function (error) {
@@ -55,7 +76,7 @@ function Schedule() {
   };
 
   const handleSelectChange = (e) => {
-    if(routeData){
+    if (routeData) {
       const shapeId = e.target.value;
       const route = routeData.find((route) => route.shapeId === shapeId);
       const stops = route.routeInfo[0].stopInfo;
@@ -70,27 +91,28 @@ function Schedule() {
   };
 
   return (
-
     <div>
       <div className="container p-3">
         <div className="row justify-content-center">
           <div className="col-auto me-4">
             <input
               type="text"
-              value={stopId}
+              value={stopIdInput}
               onChange={handleStopIdInput}
               placeholder="Enter stop ID"
             />
-            <button onClick={handleButtonClickStopId}>Get Stop Schedule</button>
+            <button onClick={handleStopIdButtonClick}>Get Stop Schedule</button>
           </div>
           <div className="col-auto">
             <input
               type="text"
-              value={routeId}
-              onChange={handleRouteInput}
+              value={routeIdInput}
+              onChange={handleRouteIdInput}
               placeholder="Enter route ID"
             />
-            <button onClick={handleRouteInputRouteId}>Get Route Schedule</button>
+            <button onClick={handleRouteIdButtonClick}>
+              Get Route Schedule
+            </button>
           </div>
         </div>
       </div>
@@ -102,30 +124,40 @@ function Schedule() {
             <div key={index}>
               <div className="container">
                 <div className="row p-3">
-                <table className="table table-bordered table-striped">
-                <thead>
-                  <tr>
-                  <th className="d-flex align-items-center">
-                  <div className="col-1 p-3 ">
-                    {info.routeType} {info.routeShortName}
-                  </div>
-                  <div className="col-4 p-3">{info.routeLongName}</div>
-                  <div className="col p-3">{info.workDays.join(" ")}</div>
-                  </th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                  <td>
-                  <div className="">{info.arrivalTimes.join(", ")}</div>
-                  </td>
-                  </tr>
-                  </tbody>
+                  <table className="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <th className="d-flex align-items-center">
+                          <div className="col-1 p-3 ">
+                            {info.routeType} {info.routeShortName}
+                          </div>
+                          <a
+                            className="col-4 p-3 link-dark hover-light link-offset-2 link-underline link-underline-opacity-0"
+                            href="#"
+                            onClick={(e) => {
+                              setRouteId(info.routeId);
+                              e.preventDefault();
+                            }}
+                          >
+                            {info.routeLongName}
+                          </a>
+                          <div className="col p-3">
+                            {info.workDays.join(" ")}
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div className="">{info.arrivalTimes.join(", ")}</div>
+                        </td>
+                      </tr>
+                    </tbody>
                   </table>
                 </div>
               </div>
             </div>
-            
           ))}
         </div>
       )}
@@ -147,8 +179,22 @@ function Schedule() {
           <div className="row">
             <div className="col-4 ">
               {stopList.map((stop, index) => (
-                <dl key={index} onClick={() => handleStopClick(index)} className={`p-2 ${selectedStopindex === index ? 'bg-light' : ''}`}>
-                  <dt ><a href="#" className="link-dark hover-light link-offset-2 link-underline link-underline-opacity-0 ">{stop.stopName}</a></dt>
+                <dl
+                  key={index}
+                  onClick={() => handleStopClick(index)}
+                  className={`p-2 ${
+                    selectedStopindex === index ? "bg-light" : ""
+                  }`}
+                >
+                  <dt>
+                    <a
+                      href="#"
+                      onClick={(e) => e.preventDefault()}
+                      className="link-dark hover-light link-offset-2 link-underline link-underline-opacity-0 "
+                    >
+                      {stop.stopName}
+                    </a>
+                  </dt>
                 </dl>
               ))}
             </div>
@@ -156,28 +202,26 @@ function Schedule() {
             {selectedStopindex !== null && (
               <div className="col">
                 <div className="row d-flex justify-content-between flex-row-reverse">
-                {selectedRoute.routeInfo.map((routeInfo, routeIndex) => (
-                  <div key={routeIndex} className="col">
-                    <table className="table table-bordered text-cente">
-                      <thead>
-                        <tr>
-                          <th>
-                            {routeInfo.workDays.join(", ")}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {routeInfo.stopInfo[
-                          selectedStopindex
-                        ].departureTime.map((time, timeIndex) => (
+                  {selectedRoute.routeInfo.map((routeInfo, routeIndex) => (
+                    <div key={routeIndex} className="col">
+                      <table className="table table-bordered text-cente">
+                        <thead>
+                          <tr>
+                            <th>{routeInfo.workDays.join(", ")}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {routeInfo.stopInfo[
+                            selectedStopindex
+                          ].departureTime.map((time, timeIndex) => (
                             <tr key={timeIndex}>
                               <td>{time}</td>
                             </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ))}
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
