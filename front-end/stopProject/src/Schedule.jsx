@@ -46,7 +46,6 @@ function Schedule() {
         .get(`http://localhost:8080/StopSchedle/${stopId}`)
         .then(function (response) {
           setStopData(response.data.stopSchedule);
-          console.log(response.data.stopSchedule);
           setRouteData(null);
         })
         .catch(function (error) {
@@ -88,6 +87,20 @@ function Schedule() {
 
   const handleStopClick = (index) => {
     setSelectedStopindex(index);
+  };
+
+  const groupeTimes = (times) => {
+    const groupedTimes = {};
+    const resultArray = [];
+    times.forEach((time) => {
+      const hour = time.substring(0, 2);
+      if (!groupedTimes[hour]) {
+        groupedTimes[hour] = [];
+        resultArray.push(groupedTimes[hour]);
+      }
+      groupedTimes[hour].push(time);
+    });
+    return resultArray;
   };
 
   return (
@@ -190,6 +203,7 @@ function Schedule() {
                     <a
                       href="#"
                       onClick={(e) => e.preventDefault()}
+                      onDoubleClick={() => (setStopId(stop.stopId), console.log(stop.stopId))}
                       className="link-dark hover-light link-offset-2 link-underline link-underline-opacity-0 "
                     >
                       {stop.stopName}
@@ -211,11 +225,11 @@ function Schedule() {
                           </tr>
                         </thead>
                         <tbody>
-                          {routeInfo.stopInfo[
-                            selectedStopindex
-                          ].departureTime.map((time, timeIndex) => (
+                          {groupeTimes(
+                            routeInfo.stopInfo[selectedStopindex].departureTime
+                          ).map((time, timeIndex) => (
                             <tr key={timeIndex}>
-                              <td>{time}</td>
+                              <td>{time.join(", ")}</td>
                             </tr>
                           ))}
                         </tbody>
