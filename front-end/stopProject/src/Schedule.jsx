@@ -30,6 +30,10 @@ function Schedule() {
     setRouteId(routeIdInput);
   };
 
+  const handleStopClick = (index) => {
+    setSelectedStopindex(index);
+  };
+  
   useEffect(() => {
     handleButtonClickStopId();
     setStopId();
@@ -46,6 +50,7 @@ function Schedule() {
         .get(`http://localhost:8080/StopSchedle/${stopId}`)
         .then(function (response) {
           setStopData(response.data.stopSchedule);
+          console.log(response.data.stopSchedule)
           setRouteData(null);
         })
         .catch(function (error) {
@@ -61,12 +66,13 @@ function Schedule() {
         .then(function (response) {
           console.log("hello");
           setRouteData(response.data.routeSchedules);
-          setSelectedShape(response.data.routeSchedules[0].shapeId);
           setSelectedRoute(response.data.routeSchedules[0]);
           setStopList(response.data.routeSchedules[0].routeInfo[0].stopInfo);
           setSelectedStopindex(0);
-          console.log(response.data);
           setStopData(null);
+          if(!selectedShape){
+            setSelectedShape(response.data.routeSchedules[0].shapeId)
+          }
         })
         .catch(function (error) {
           console.log(error);
@@ -82,11 +88,8 @@ function Schedule() {
       setSelectedShape(shapeId);
       setSelectedRoute(route);
       setStopList(stops);
+      setSelectedStopindex(0)
     }
-  };
-
-  const handleStopClick = (index) => {
-    setSelectedStopindex(index);
   };
 
   const groupeTimes = (times) => {
@@ -148,6 +151,7 @@ function Schedule() {
                             className="col-4 p-3 link-dark hover-light link-offset-2 link-underline link-underline-opacity-0"
                             href="#"
                             onClick={(e) => {
+                              setSelectedShape(info.shapeId);
                               setRouteId(info.routeId);
                               e.preventDefault();
                             }}
@@ -203,7 +207,7 @@ function Schedule() {
                     <a
                       href="#"
                       onClick={(e) => e.preventDefault()}
-                      onDoubleClick={() => (setStopId(stop.stopId), console.log(stop.stopId))}
+                      onDoubleClick={() => setStopId(stop.stopId)}
                       className="link-dark hover-light link-offset-2 link-underline link-underline-opacity-0 "
                     >
                       {stop.stopName}
