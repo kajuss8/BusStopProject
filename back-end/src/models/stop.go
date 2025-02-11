@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-type LocationCategory uint8
+type LocationCategory int
 
 const (
 	StopOrPlatform LocationCategory = 0
@@ -17,7 +17,7 @@ const (
 )
 
 type Stop struct {
-	StopId        int           `json:"stopId"`
+	StopId        int           	`json:"stopId"`
 	StopCode      string           `json:"stopCode"`
 	StopName      string           `json:"stopName"`
 	StopDesc      string           `json:"stopDesc"`
@@ -40,12 +40,21 @@ func getAllStops() (stopsResult []Stop, err error) {
 	}
 	
 	for _, stop := range stops {
-		stopId, _ := strconv.Atoi(stop[0])
+		stopId, err := strconv.Atoi(stop[0])
+		if err != nil {
+			return nil, fmt.Errorf("getAllStops failed to parse stopId: %w", err)
+		}
 		stopCode := stop[1]
 		stopName := stop[2]
 		stopDesc := stop[3]
-		stopLat, _ := strconv.ParseFloat(stop[4], 64)
-		stopLon, _ := strconv.ParseFloat(stop[5], 64)
+		stopLat, err := strconv.ParseFloat(stop[4], 64)
+		if err != nil {
+			return nil, fmt.Errorf("getAllStops failed to parse stopLat: %w", err)
+		}
+		stopLon, err := strconv.ParseFloat(stop[5], 64)
+		if err != nil {
+			return nil, fmt.Errorf("getAllStops failed to parse stopLon: %w", err)
+		}
 		stopUrl := stop[6]
 		locationType, _ := strconv.Atoi(stop[7])
 		parentStation, _ := strconv.Atoi(stop[8])

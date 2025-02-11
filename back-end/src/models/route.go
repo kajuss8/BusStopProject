@@ -47,11 +47,17 @@ func getAllRoutes() ([]Route, error) {
 		routeShortName := route[1]
 		routeLongName := route[2]
 		routeDesc := route[3]
-		routeType, _ := strconv.Atoi(route[4])
+		routeType, err := strconv.Atoi(route[4])
+		if err != nil {
+			return nil, fmt.Errorf("getAllRoutes failed to parse routeType: %w", err)
+		}
 		routeUrl := route[5]
 		routeColor := route[6]
 		routeTextColor := route[7]
-		routeSortOrder, _ := strconv.Atoi(route[8])
+		routeSortOrder, err := strconv.Atoi(route[8])
+		if err != nil {
+			return nil, fmt.Errorf("getAllRoutes failed to parse routeSortOrder: %w", err)
+		}
 
 		routesResult = append(routesResult, Route{
 			RouteId:        routeId,

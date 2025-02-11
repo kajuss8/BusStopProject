@@ -13,7 +13,7 @@ const (
 	Inbound  Direction = 1
 )
 
-type WheelchairAccessibility uint8
+type WheelchairAccessibility int
 
 const (
 	NoInfo        WheelchairAccessibility = 0
@@ -42,11 +42,20 @@ func getAllTrips() (TripsResult []Trip, err error) {
 
 	for _, trip := range trips {
 		routeId := trip[0]
-		serviceId, _ := strconv.Atoi(trip[1])
+		serviceId, err := strconv.Atoi(trip[1])
+		if err != nil {
+			return nil, fmt.Errorf("getAllTrips failed to parse serviceId: %w", err)
+		}
 		tripId := trip[2]
 		tripHeadsign := trip[3]
-		directionId, _ := strconv.Atoi(trip[4])
-		blockId, _ := strconv.Atoi(trip[5])
+		directionId, err := strconv.Atoi(trip[4])
+		if err != nil {
+			return nil, fmt.Errorf("getAllTrips failed to parse directionId: %w", err)
+		}
+		blockId, err := strconv.Atoi(trip[5])
+		if err != nil {
+			return nil, fmt.Errorf("getAllTrips failed to parse blockId: %w", err)
+		}
 		shapeId := trip[6]
 		wheelchairAccessible, _ := strconv.Atoi(trip[7])
 

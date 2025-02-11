@@ -46,10 +46,22 @@ func getAllStopTimes() (stopTimesResult []StopTime, err error){
 		tripId := stopTime[0]
 		arrivalTime := stopTime[1]
 		departureTime := stopTime[2]
-		stopId, _ := strconv.Atoi(stopTime[3])
-		stopSequence, _ := strconv.Atoi(stopTime[4])
-		pickupType, _ := strconv.Atoi(stopTime[5])
-		dropOffType, _ := strconv.Atoi(stopTime[6])
+		stopId, err := strconv.Atoi(stopTime[3])
+		if err != nil {
+			return nil, fmt.Errorf("getAllStopTimes failed to parse stopId: %w", err)
+		}
+		stopSequence, err := strconv.Atoi(stopTime[4])
+		if err != nil {
+			return nil, fmt.Errorf("getAllStopTimes failed to parse stopSequence: %w", err)
+		}
+		pickupType, err := strconv.Atoi(stopTime[5])
+		if err != nil {
+			return nil, fmt.Errorf("getAllStopTimes failed to parse pickupType: %w", err)
+		}
+		dropOffType, err := strconv.Atoi(stopTime[6])
+		if err != nil {
+			return nil, fmt.Errorf("getAllStopTimes failed to parse dropOffType: %w", err)
+		}
 
 		stopTimesResult = append(stopTimesResult ,StopTime{
 			TripId:        tripId,

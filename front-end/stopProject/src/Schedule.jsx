@@ -50,7 +50,6 @@ function Schedule() {
         .get(`http://localhost:8080/StopSchedle/${stopId}`)
         .then(function (response) {
           setStopData(response.data.stopSchedule);
-          console.log(response.data.stopSchedule)
           setRouteData(null);
         })
         .catch(function (error) {
@@ -64,7 +63,6 @@ function Schedule() {
       await axios
         .get(`http://localhost:8080/RouteSchedule/${routeId}`)
         .then(function (response) {
-          console.log("hello");
           setRouteData(response.data.routeSchedules);
           setSelectedRoute(response.data.routeSchedules[0]);
           setStopList(response.data.routeSchedules[0].routeInfo[0].stopInfo);
@@ -115,8 +113,9 @@ function Schedule() {
               type="text"
               value={stopIdInput}
               onChange={handleStopIdInput}
-              placeholder="Enter stop ID"
+              placeholder="Stop ID"
             />
+            
             <button onClick={handleStopIdButtonClick}>Get Stop Schedule</button>
           </div>
           <div className="col-auto">
@@ -124,7 +123,7 @@ function Schedule() {
               type="text"
               value={routeIdInput}
               onChange={handleRouteIdInput}
-              placeholder="Enter route ID"
+              placeholder="Route ID"
             />
             <button onClick={handleRouteIdButtonClick}>
               Get Route Schedule
