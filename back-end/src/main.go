@@ -25,7 +25,12 @@ func corsMiddleware() gin.HandlerFunc {
 }
 
 func getStopSchedule(ctx *gin.Context) {
-	id, _ := strconv.Atoi(ctx.Param("id"))
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid stop ID"})
+		return
+	}
+
 	stopSchedule, err := models.CreateStopsSchedule(id)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stop not found"})
