@@ -28,7 +28,7 @@ type StopTime struct {
 	TripId        string		`json:"tripId"`
 	ArrivalTime   string     	`json:"arrivalTime"`
 	DepartureTime string     	`json:"departureTime"`
-	StopId        string        `json:"stopId"`
+	StopId        int        `json:"stopId"`
 	StopSequence  int         	`json:"stopSequence"`
 	PickupType    PickupStatus  `json:"pickupType"`
 	DropOffType   DropOffStatus `json:"dropOffType"`
@@ -46,7 +46,7 @@ func getAllStopTimes() (stopTimesResult []StopTime, err error){
 		tripId := stopTime[0]
 		arrivalTime := stopTime[1]
 		departureTime := stopTime[2]
-		stopId := stopTime[3]
+		stopId, _ := strconv.Atoi(stopTime[3])
 		stopSequence, _ := strconv.Atoi(stopTime[4])
 		pickupType, _ := strconv.Atoi(stopTime[5])
 		dropOffType, _ := strconv.Atoi(stopTime[6])
@@ -64,7 +64,7 @@ func getAllStopTimes() (stopTimesResult []StopTime, err error){
 	return stopTimesResult, nil
 }
 
-func getStopTimesByStopId(stopId string) (stopTimesById []StopTime, err error) {
+func getStopTimesByStopId(stopId int) (stopTimesById []StopTime, err error) {
 	stopTimes, err := getAllStopTimes()
 	if err != nil {
 		return nil, err
@@ -128,13 +128,13 @@ func getDepartureTimesByStopIds(stopTimes [][]StopTime) ([][][]string, error) {
 	var result [][][]string
 
 	for _, stopTimesSlice := range stopTimes {
-		stopIdMap := make(map[string][]string)
+		stopIdMap := make(map[int][]string)
 		for _, stopTime := range stopTimesSlice {
 			stopIdMap[stopTime.StopId] = append(stopIdMap[stopTime.StopId], stopTime.DepartureTime[:5])
 		}
 
 		var groupedDepartureTimes [][]string
-		processedStopIds := make(map[string]bool)
+		processedStopIds := make(map[int]bool)
 		for _, stopTime := range stopTimesSlice {
 			if _, exists := processedStopIds[stopTime.StopId]; !exists {
 				groupedDepartureTimes = append(groupedDepartureTimes, stopIdMap[stopTime.StopId])
@@ -147,12 +147,12 @@ func getDepartureTimesByStopIds(stopTimes [][]StopTime) ([][][]string, error) {
 	return result, nil
 }
 
-func getUniqueStopIds(stopTimes [][]StopTime) [][]string {
-	var uniqueStopIds [][]string
+func getUniqueStopIds(stopTimes [][]StopTime) [][]int {
+	var uniqueStopIds [][]int
 
 	for _, stopTimesSlice := range stopTimes {
-		stopIdMap := make(map[string]bool)
-		var stopIds []string
+		stopIdMap := make(map[int]bool)
+		var stopIds []int
 		for _, stopTime := range stopTimesSlice {
 			if _, exists := stopIdMap[stopTime.StopId]; !exists {
 				stopIdMap[stopTime.StopId] = true

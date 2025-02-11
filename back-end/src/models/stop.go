@@ -17,7 +17,7 @@ const (
 )
 
 type Stop struct {
-	StopId        string           `json:"stopId"`
+	StopId        int           `json:"stopId"`
 	StopCode      string           `json:"stopCode"`
 	StopName      string           `json:"stopName"`
 	StopDesc      string           `json:"stopDesc"`
@@ -40,7 +40,7 @@ func getAllStops() (stopsResult []Stop, err error) {
 	}
 	
 	for _, stop := range stops {
-		stopId := stop[0]
+		stopId, _ := strconv.Atoi(stop[0])
 		stopCode := stop[1]
 		stopName := stop[2]
 		stopDesc := stop[3]
@@ -65,7 +65,7 @@ func getAllStops() (stopsResult []Stop, err error) {
 	return stopsResult, nil
 }
 
-func getStopById(stopId string) (Stop, error) {
+func getStopById(stopId int) (Stop, error) {
 	stops, err := getAllStops()
 	if err != nil {
 		return Stop{}, err
@@ -79,7 +79,7 @@ func getStopById(stopId string) (Stop, error) {
 	return Stop{}, fmt.Errorf("GetStopId failed: no such stop ID")
 }
 
-func getStopNameById(stopId string) (string, error) {
+func getStopNameById(stopId int) (string, error) {
 	stops, err := getAllStops()
 	if err != nil {
 		return "", err
@@ -97,13 +97,13 @@ func getStopName(stop Stop) string {
 	return stop.StopName
 }
 
-func getStopNames(allStopIds [][]string) (stopNames [][]string, err error) {
+func getStopNames(allStopIds [][]int) (stopNames [][]string, err error) {
 	stops, err := getAllStops()
 	if err != nil {
 		return nil, err
 	}
 
-	stopMap := make(map[string]string)
+	stopMap := make(map[int]string)
 	for _, stop := range stops {
 		stopMap[stop.StopId] = stop.StopName
 	}
@@ -114,7 +114,7 @@ func getStopNames(allStopIds [][]string) (stopNames [][]string, err error) {
 			if stopName, exists := stopMap[stopId]; exists {
 				stopNameArr = append(stopNameArr, stopName)
 			} else {
-				return nil, fmt.Errorf("getStopNames failed: no such stop ID %s", stopId)
+				return nil, fmt.Errorf("getStopNames failed: no such stop ID %v", stopId)
 			}
 		}
 		stopNames = append(stopNames, stopNameArr)

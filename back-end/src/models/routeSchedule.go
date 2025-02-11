@@ -17,7 +17,7 @@ type RouteInformation struct {
 }
 
 type StopInfo struct {
-	StopId		  string	`json:"stopId"`
+	StopId		  int	`json:"stopId"`
 	StopName      string	`json:"stopName"`
 	DepartureTime []string	`json:"departureTime"`
 }
@@ -63,7 +63,7 @@ func CreateRouteSchedule(routeId string) ([]RouteSchedule, error) {
 	return buildRouteSchedules(shapeIds, namedWorkDays, stopNames, stopIds, routeLongName, departureTimes, startDates, endDates, currentDate)
 }
 
-func buildRouteSchedules(shapeIds []string, workDays [][]string, stopNames, stopId [][]string, routeLongName []string, departureTimes [][][]string, startDates, endDates []time.Time, currentDate time.Time) ([]RouteSchedule, error) {
+func buildRouteSchedules(shapeIds []string, workDays [][]string, stopNames [][]string, stopId [][]int, routeLongName []string, departureTimes [][][]string, startDates, endDates []time.Time, currentDate time.Time) ([]RouteSchedule, error) {
 	shapeIdMap := make(map[string]*RouteSchedule)
 	for i, shapeId := range shapeIds {
 		if currentDate.After(startDates[i]) && currentDate.Before(endDates[i]){
@@ -96,7 +96,7 @@ func buildRouteSchedules(shapeIds []string, workDays [][]string, stopNames, stop
 	return routeSchedules, nil
 }
 
-func buildStopInfo(stopNames, stopId []string, departureTimes [][]string) []StopInfo {
+func buildStopInfo(stopNames []string, stopId []int, departureTimes [][]string) []StopInfo {
 	var stopInfo []StopInfo
 	for i, stopName := range stopNames {
 		stopInfo = append(stopInfo, StopInfo{
@@ -108,7 +108,7 @@ func buildStopInfo(stopNames, stopId []string, departureTimes [][]string) []Stop
 	return stopInfo
 }
 
-func createRoutesLongName(stopIds [][]string) (routeLName []string, err error) {
+func createRoutesLongName(stopIds [][]int) (routeLName []string, err error) {
 	for _, stopIdSlice := range stopIds{
 		firstStopIdName, err := getStopNameById(stopIdSlice[0])
 		if err != nil {

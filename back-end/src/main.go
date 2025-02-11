@@ -4,6 +4,7 @@ import (
 	"busProject/src/handleFiles"
 	"busProject/src/models"
 	"net/http"
+	"strconv"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,7 +25,7 @@ func corsMiddleware() gin.HandlerFunc {
 }
 
 func getStopSchedule(ctx *gin.Context) {
-	id := ctx.Param("id")
+	id, _ := strconv.Atoi(ctx.Param("id"))
 	stopSchedule, err := models.CreateStopsSchedule(id)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stop not found"})
