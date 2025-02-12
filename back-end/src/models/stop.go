@@ -130,3 +130,40 @@ func getStopNames(allStopIds [][]int) (stopNames [][]string, err error) {
 	}
 	return stopNames, nil
 }
+
+func getStopLanAndLon(allStopIds [][]int) (stopLat, stopLon [][]float64, err error){
+	stops, err := getAllStops()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	stopLatMap := make(map[int]float64)
+	stopLonMap := make(map[int]float64)
+
+	for _, stop := range stops {
+		stopLatMap[stop.StopId] = stop.StopLat
+		stopLonMap[stop.StopId] = stop.StopLon
+	}
+
+	for _, stopIdArr := range allStopIds {
+		var stopLatArr []float64
+		var stopLonArr []float64
+		for _, stopId := range stopIdArr {
+			if stopLat, exists := stopLatMap[stopId]; exists {
+				stopLatArr = append(stopLatArr, stopLat)
+			} else {
+				return nil, nil, fmt.Errorf("getStopLanAndLon failed: no such stop ID %v", stopId)
+			}
+
+			if stopLon, exists := stopLonMap[stopId]; exists{
+				stopLonArr = append(stopLonArr, stopLon)
+			}else {
+				return nil, nil, fmt.Errorf("getStopLanAndLon failed: no such stop ID %v", stopId)
+			}
+		}
+		stopLat = append(stopLat, stopLatArr)
+		stopLon = append(stopLat, stopLonArr)
+	}
+	return stopLat, stopLon, nil
+
+}

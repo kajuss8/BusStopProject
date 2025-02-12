@@ -3,6 +3,8 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function Schedule() {
+  const [allRoutesData, setAllRoutesData] = useState(null);
+  const [filteredTypes, setFilteredTypes] = useState(null);
   const [stopData, setStopData] = useState(null);
   const [routeData, setRouteData] = useState(null);
   const [selectedShape, setSelectedShape] = useState(null);
@@ -13,6 +15,20 @@ function Schedule() {
   const [stopIdInput, setStopIdInput] = useState("");
   const [routeId, setRouteId] = useState("");
   const [routeIdInput, setRouteIdInpute] = useState("");
+
+  const handleAllTypes = () => {
+    setFilteredTypes(allRoutesData)
+  }
+
+  const handleBusFileter = () => {
+    const bus = allRoutesData.filter(route => route.routeTransportType === "A");
+    setFilteredTypes(bus)
+  }
+
+  const handleTrolFileter = () => {
+    const trol = allRoutesData.filter(route => route.routeTransportType === "T");
+    setFilteredTypes(trol)
+  }
 
   const handleStopIdInput = (e) => {
     setStopIdInput(e.target.value);
@@ -33,7 +49,12 @@ function Schedule() {
   const handleStopClick = (index) => {
     setSelectedStopindex(index);
   };
-  
+
+  useEffect(() => {
+    handleAllRoutesData();
+    console.log("hello")
+  }, []);
+
   useEffect(() => {
     handleButtonClickStopId();
     setStopId();
@@ -43,6 +64,19 @@ function Schedule() {
     handleRouteInputRouteId();
     setRouteId();
   }, [routeId]);
+
+  const handleAllRoutesData = async () => {
+    await axios
+      .get(`http://localhost:8080/AllRoutes`)
+      .then(function (response) {
+        console.log(response.data);
+        setAllRoutesData(response.data.routesData);
+        setFilteredTypes(response.data.routesData)
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
 
   const handleButtonClickStopId = async () => {
     if (stopId) {
@@ -68,8 +102,8 @@ function Schedule() {
           setStopList(response.data.routeSchedules[0].routeInfo[0].stopInfo);
           setSelectedStopindex(0);
           setStopData(null);
-          if(!selectedShape){
-            setSelectedShape(response.data.routeSchedules[0].shapeId)
+          if (!selectedShape) {
+            setSelectedShape(response.data.routeSchedules[0].shapeId);
           }
         })
         .catch(function (error) {
@@ -86,7 +120,7 @@ function Schedule() {
       setSelectedShape(shapeId);
       setSelectedRoute(route);
       setStopList(stops);
-      setSelectedStopindex(0)
+      setSelectedStopindex(0);
     }
   };
 
@@ -115,7 +149,7 @@ function Schedule() {
               onChange={handleStopIdInput}
               placeholder="Stop ID"
             />
-            
+
             <button onClick={handleStopIdButtonClick}>Get Stop Schedule</button>
           </div>
           <div className="col-auto">
@@ -131,6 +165,71 @@ function Schedule() {
           </div>
         </div>
       </div>
+
+      {allRoutesData && (
+        <div className="container">
+          <div className="d-flex justify-content-center">
+            <div
+              className="btn-group btn-group-lg"
+              role="group"
+              aria-label="Large button group"
+            >
+              <input
+                type="radio"
+                className="btn-check"
+                name="options"
+                id="option1"
+                autoComplete="off"
+                defaultChecked
+                onChange={handleAllTypes}
+              />
+              <label className="btn btn-outline-primary" htmlFor="option1">
+                Autobusai ir Troleibusai
+              </label>
+
+              <input
+                type="radio"
+                className="btn-check"
+                name="options"
+                id="option2"
+                autoComplete="off"
+                onClick={handleBusFileter}
+              />
+              <label className="btn btn-outline-primary" htmlFor="option2">
+                Autobusai
+              </label>
+
+              <input
+                type="radio"
+                className="btn-check"
+                name="options"
+                id="option3"
+                autoComplete="off"
+                onClick={handleTrolFileter}
+              />
+              <label className="btn btn-outline-primary" htmlFor="option3">
+                Troleibusai
+              </label>
+            </div>
+          </div>
+          {filteredTypes && (
+            <table className="table">
+            <tbody>
+              {filteredTypes.map((route, index) => (
+                <tr key={index}>
+                  <td className="col-4">
+                    {route.routeShortName} {route.routeLongName}
+                  </td>
+                  <td className="col-4">
+                  {route.workDays.join(" ")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          )}
+        </div>
+      )}
 
       {stopData && (
         <div className="container">

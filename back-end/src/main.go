@@ -49,13 +49,34 @@ func getRouteSchedule(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"routeSchedules": routeSchedule})
 }
 
+func getAllRoutes(ctx *gin.Context) {
+	routes, err := models.CreateRouteWorkDays()
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Routes not found"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"routesData": routes})
+}
+
+// func getTripServiceIds(ctx *gin.Context) {
+// 	routes, err := models.CreateRouteWorkDays()
+// 	if err != nil {
+// 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Routes not found"})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, gin.H{"routesData": routes})
+// }
+
 func main() {
 
 	handleFiles.ProcessGtfs()
 
 	router := gin.Default()
 	router.Use(corsMiddleware())
+	router.GET("/AllRoutes", getAllRoutes)
 	router.GET("/StopSchedle/:id", getStopSchedule)
 	router.GET("/RouteSchedule/:id", getRouteSchedule)
+	//router.GET("/ServiceIds", getTripServiceIds)
 	router.Run()
 }

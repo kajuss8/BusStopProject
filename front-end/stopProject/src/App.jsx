@@ -1,7 +1,9 @@
 import Schedule from './Schedule.jsx'
 
+
 function App() {
-  return(<Schedule />)
+  return(<Schedule />
+  )
 }
 
 export default App;

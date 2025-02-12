@@ -27,6 +27,7 @@ type Route struct {
 	RouteLongName  string        `json:"routeLongName"`
 	RouteDesc      string        `json:"routeDesc"`
 	RouteType      TransportType `json:"routeType"`
+	RouteTransportType	string 	 `json:"routeTransportType"`
 	RouteUrl       string        `json:"routeUrl"`
 	RouteColor     string        `json:"routeColor"`
 	RouteTextColor string        `json:"routeTextColor"`
@@ -35,7 +36,7 @@ type Route struct {
 
 const routeFileName = "routes.txt"
 
-func getAllRoutes() ([]Route, error) {
+func GetAllRoutes() ([]Route, error) {
 	var routesResult []Route
 	routes, err := handleFiles.ReadFile(filepath + routeFileName)
 	if err != nil {
@@ -51,6 +52,8 @@ func getAllRoutes() ([]Route, error) {
 		if err != nil {
 			return nil, fmt.Errorf("getAllRoutes failed to parse routeType: %w", err)
 		}
+		routeTransportType := convertRouteTypeToLetter(TransportType(routeType))
+
 		routeUrl := route[5]
 		routeColor := route[6]
 		routeTextColor := route[7]
@@ -65,6 +68,7 @@ func getAllRoutes() ([]Route, error) {
 			RouteLongName:  routeLongName,
 			RouteDesc:      routeDesc,
 			RouteType:      TransportType(routeType),
+			RouteTransportType: routeTransportType,
 			RouteUrl:       routeUrl,
 			RouteColor:     routeColor,
 			RouteTextColor: routeTextColor,
@@ -76,7 +80,7 @@ func getAllRoutes() ([]Route, error) {
 }
 
 func convertTripIdToRoutesShortLongNameAndType(routeIds []string) (shortName, longName, routeT []string, err error) {
-	routes, err := getAllRoutes()
+	routes, err := GetAllRoutes()
 	if err != nil{
 		return nil, nil, nil, err
 	}
@@ -125,5 +129,15 @@ func convertRouteTypeNumberToLetter(routeTypes []TransportType) (routeLetter []s
 			routeLetter = append(routeLetter, "T")
 		}
 	}
+	return routeLetter
+}
+
+func convertRouteTypeToLetter(routeType TransportType) (routeLetter string) {
+		switch routeType {
+		case Bus:
+			routeLetter = "A"
+		case Trolleybus:
+			routeLetter = "T"
+		}
 	return routeLetter
 }
