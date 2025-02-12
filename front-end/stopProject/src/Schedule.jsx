@@ -11,24 +11,32 @@ function Schedule() {
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [stopList, setStopList] = useState(null);
   const [selectedStopindex, setSelectedStopindex] = useState(null);
+  const [routeTypeName, SetRouteTypeName] = useState(null);
   const [stopId, setStopId] = useState("");
   const [stopIdInput, setStopIdInput] = useState("");
   const [routeId, setRouteId] = useState("");
   const [routeIdInput, setRouteIdInpute] = useState("");
 
   const handleAllTypes = () => {
-    setFilteredTypes(allRoutesData)
-  }
+    setFilteredTypes(allRoutesData);
+    SetRouteTypeName("Autobusai ir Troleibusai");
+  };
 
   const handleBusFileter = () => {
-    const bus = allRoutesData.filter(route => route.routeTransportType === "A");
-    setFilteredTypes(bus)
-  }
+    const bus = allRoutesData.filter(
+      (route) => route.routeTransportType === "A"
+    );
+    setFilteredTypes(bus);
+    SetRouteTypeName("Autobusai");
+  };
 
   const handleTrolFileter = () => {
-    const trol = allRoutesData.filter(route => route.routeTransportType === "T");
-    setFilteredTypes(trol)
-  }
+    const trol = allRoutesData.filter(
+      (route) => route.routeTransportType === "T"
+    );
+    setFilteredTypes(trol);
+    SetRouteTypeName("Troleibusai");
+  };
 
   const handleStopIdInput = (e) => {
     setStopIdInput(e.target.value);
@@ -52,7 +60,7 @@ function Schedule() {
 
   useEffect(() => {
     handleAllRoutesData();
-    console.log("hello")
+    console.log("hello");
   }, []);
 
   useEffect(() => {
@@ -71,7 +79,8 @@ function Schedule() {
       .then(function (response) {
         console.log(response.data);
         setAllRoutesData(response.data.routesData);
-        setFilteredTypes(response.data.routesData)
+        setFilteredTypes(response.data.routesData);
+        SetRouteTypeName("Autobusai ir Troleibusai");
       })
       .catch(function (error) {
         console.log(error);
@@ -213,20 +222,21 @@ function Schedule() {
             </div>
           </div>
           {filteredTypes && (
-            <table className="table">
-            <tbody>
-              {filteredTypes.map((route, index) => (
-                <tr key={index}>
-                  <td className="col-4">
-                    {route.routeShortName} {route.routeLongName}
-                  </td>
-                  <td className="col-4">
-                  {route.workDays.join(" ")}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            <div>
+              <h3>{routeTypeName}</h3>
+              <table className="table">
+                <tbody>
+                  {filteredTypes.map((route, index) => (
+                    <tr key={index}>
+                      <td className="col-4">
+                        {route.routeShortName} {route.routeLongName}
+                      </td>
+                      <td className="col-4">{route.workDays.join(" ")}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       )}
