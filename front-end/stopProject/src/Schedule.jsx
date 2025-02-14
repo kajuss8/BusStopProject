@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
+import MapComponent from "./MapComponent.jsx";
 
 function Schedule() {
   const [allRoutesData, setAllRoutesData] = useState(null);
@@ -10,12 +11,13 @@ function Schedule() {
   const [selectedShape, setSelectedShape] = useState(null);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [stopList, setStopList] = useState(null);
-  const [selectedStopindex, setSelectedStopindex] = useState(null);
+  const [selectedStopindex, setSelectedStopindex] = useState(0);
   const [routeTypeName, SetRouteTypeName] = useState(null);
   const [stopId, setStopId] = useState("");
   const [stopIdInput, setStopIdInput] = useState("");
   const [routeId, setRouteId] = useState("");
   const [routeIdInput, setRouteIdInpute] = useState("");
+  const [coordinates, setCoordinates] = useState(null);
 
   const handleAllTypes = () => {
     setFilteredTypes(allRoutesData);
@@ -60,7 +62,6 @@ function Schedule() {
 
   useEffect(() => {
     handleAllRoutesData();
-    console.log("hello");
   }, []);
 
   useEffect(() => {
@@ -70,6 +71,7 @@ function Schedule() {
 
   useEffect(() => {
     handleRouteInputRouteId();
+
     setRouteId();
   }, [routeId]);
 
@@ -77,7 +79,6 @@ function Schedule() {
     await axios
       .get(`http://localhost:8080/AllRoutes`)
       .then(function (response) {
-        console.log(response.data);
         setAllRoutesData(response.data.routesData);
         setFilteredTypes(response.data.routesData);
         SetRouteTypeName("Autobusai ir Troleibusai");
@@ -94,6 +95,9 @@ function Schedule() {
         .then(function (response) {
           setStopData(response.data.stopSchedule);
           setRouteData(null);
+          if (response) {
+            setAllRoutesData();
+          }
         })
         .catch(function (error) {
           console.log(error);
@@ -114,6 +118,10 @@ function Schedule() {
           if (!selectedShape) {
             setSelectedShape(response.data.routeSchedules[0].shapeId);
           }
+          if(response){
+            setAllRoutesData();
+            setCoordinates(response.data.routeSchedules[0].routeInfo[0].stopInfo)
+          }
         })
         .catch(function (error) {
           console.log(error);
@@ -126,6 +134,7 @@ function Schedule() {
       const shapeId = e.target.value;
       const route = routeData.find((route) => route.shapeId === shapeId);
       const stops = route.routeInfo[0].stopInfo;
+      setCoordinates(stops)
       setSelectedShape(shapeId);
       setSelectedRoute(route);
       setStopList(stops);
@@ -229,7 +238,17 @@ function Schedule() {
                   {filteredTypes.map((route, index) => (
                     <tr key={index}>
                       <td className="col-4">
-                        {route.routeShortName} {route.routeLongName}
+                        {route.routeShortName}
+                        <a
+                          className="col-4 p-3 link-dark hover-light link-offset-2 link-underline link-underline-opacity-0"
+                          href="#"
+                          onClick={(e) => {
+                            setRouteId(route.routeId);
+                            e.preventDefault();
+                          }}
+                        >
+                          {route.routeLongName}
+                        </a>
                       </td>
                       <td className="col-4">{route.workDays.join(" ")}</td>
                     </tr>
@@ -275,7 +294,7 @@ function Schedule() {
                     <tbody>
                       <tr>
                         <td>
-                          <div className="">{info.arrivalTimes.join(", ")}</div>
+                          <div >{info.arrivalTimes.join(", ")}</div>
                         </td>
                       </tr>
                     </tbody>
@@ -288,7 +307,7 @@ function Schedule() {
       )}
 
       {routeData && (
-        <div className="container">
+        <div className="" >
           <select
             className="form-select mb-3 w-auto"
             onChange={handleSelectChange}
@@ -301,12 +320,12 @@ function Schedule() {
             ))}
           </select>
 
-          <div className="row">
-            <div className="col-4 ">
+          <div className="row ">
+            <div className="col-auto ">
               {stopList.map((stop, index) => (
                 <dl
                   key={index}
-                  onClick={() => handleStopClick(index)}
+                  onClick={() => {handleStopClick(index);}}
                   className={`p-2 ${
                     selectedStopindex === index ? "bg-light" : ""
                   }`}
@@ -314,7 +333,7 @@ function Schedule() {
                   <dt>
                     <a
                       href="#"
-                      onClick={(e) => e.preventDefault()}
+                      onClick={(e) => {e.preventDefault()}}
                       onDoubleClick={() => setStopId(stop.stopId)}
                       className="link-dark hover-light link-offset-2 link-underline link-underline-opacity-0 "
                     >
@@ -326,8 +345,8 @@ function Schedule() {
             </div>
 
             {selectedStopindex !== null && (
-              <div className="col">
-                <div className="row d-flex justify-content-between flex-row-reverse">
+              <div className="col-auto ">
+                <div className="row d-flex flex-wrap  justify-content-between flex-row-reverse">
                   {selectedRoute.routeInfo.map((routeInfo, routeIndex) => (
                     <div key={routeIndex} className="col">
                       <table className="table table-bordered text-cente">
@@ -351,6 +370,9 @@ function Schedule() {
                 </div>
               </div>
             )}
+            <div className="col">
+                <MapComponent coordinates={coordinates} selectedIndex={selectedStopindex}/>
+            </div>
           </div>
         </div>
       )}

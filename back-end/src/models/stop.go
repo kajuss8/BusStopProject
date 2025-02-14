@@ -162,7 +162,7 @@ func getStopLanAndLon(allStopIds [][]int) (stopLat, stopLon [][]float64, err err
 			}
 		}
 		stopLat = append(stopLat, stopLatArr)
-		stopLon = append(stopLat, stopLonArr)
+		stopLon = append(stopLon, stopLonArr)
 	}
 	return stopLat, stopLon, nil
 
