@@ -59,14 +59,15 @@ func getAllRoutes(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"routesData": routes})
 }
 
-// func getTripServiceIds(ctx *gin.Context) {
-// 	routes, err := models.CreateRouteWorkDays()
-// 	if err != nil {
-// 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Routes not found"})
-// 		return
-// 	}
-// 	ctx.JSON(http.StatusOK, gin.H{"routesData": routes})
-// }
+func getAllStops(ctx *gin.Context) {
+	stops, err := models.GetAllStops()
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stops not found"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"stopsData": stops})
+}
 
 func main() {
 
@@ -77,6 +78,6 @@ func main() {
 	router.GET("/AllRoutes", getAllRoutes)
 	router.GET("/StopSchedle/:id", getStopSchedule)
 	router.GET("/RouteSchedule/:id", getRouteSchedule)
-	//router.GET("/ServiceIds", getTripServiceIds)
+	router.GET("/Stops", getAllStops)
 	router.Run()
 }

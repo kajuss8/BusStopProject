@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 const ChangeView = ({ center }) => {
   const map = useMap();
@@ -9,30 +10,37 @@ const ChangeView = ({ center }) => {
 };
 
 const fetchRoute = async (coordinates) => {
-  const coords = coordinates.map(coord => `${coord.stopLon},${coord.stopLat}`).join(';');
-  const url = `http://router.project-osrm.org/route/v1/driving/${coords}?overview=full&steps=true`;
+  if (coordinates.length < 2) return null;
+
+  const coords = coordinates.map(coord => `${coord.stopLon},${coord.stopLat}`).join(";");
+  const url = `http://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=polyline&continue_straight=true&steps=true`;
 
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error('Failed to fetch route');
+      throw new Error("Failed to fetch route");
     }
     const data = await response.json();
     if (!data.routes || data.routes.length === 0) {
-      throw new Error('No routes found');
+      throw new Error("No routes found");
     }
-    return data.routes[0].geometry;
+    return decodePolyline(data.routes[0].geometry);
   } catch (error) {
-    console.error('Error fetching route:', error);
+    console.error("Error fetching route:", error);
     return null;
   }
 };
 
-const MapComponent = ({ coordinates, selectedIndex = 0 }) => {
+const MapComponent = ({ coordinates, selectedIndex, onMarkerClick }) => {
   const [center, setCenter] = useState([0, 0]);
   const markersRef = useRef([]);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [route, setRoute] = useState(null);
+
+  const customIcon = L.icon({
+    iconUrl: "/record-button.png",
+    iconSize: [15, 15],
+  });
 
   useEffect(() => {
     if (coordinates.length > 0) {
@@ -45,7 +53,7 @@ const MapComponent = ({ coordinates, selectedIndex = 0 }) => {
     if (mapLoaded && selectedIndex !== null && markersRef.current[selectedIndex]) {
       setTimeout(() => {
         markersRef.current[selectedIndex].openPopup();
-      }, 100);
+      }, 10);
     }
   }, [mapLoaded, selectedIndex]);
 
@@ -65,16 +73,21 @@ const MapComponent = ({ coordinates, selectedIndex = 0 }) => {
       whenReady={() => setMapLoaded(true)}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      {route && <Polyline positions={decodePolyline(route)} color="red" weight={4} />}
+
+      {route && <Polyline positions={route} color="green" weight={4} />}
+
       {coordinates.map((coord, index) => (
         <Marker
           key={index}
           position={[coord.stopLat, coord.stopLon]}
           ref={(el) => (markersRef.current[index] = el)}
+          eventHandlers={{ click: () => onMarkerClick(index) }}
+          icon={customIcon}
         >
           <Popup>{coord.stopName}</Popup>
         </Marker>
       ))}
+
       <ChangeView center={center} />
     </MapContainer>
   );

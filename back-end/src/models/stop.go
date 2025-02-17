@@ -6,26 +6,12 @@ import (
 	"strconv"
 )
 
-type LocationCategory int
-
-const (
-	StopOrPlatform LocationCategory = 0
-	Station        LocationCategory = 1
-	EntranceExit   LocationCategory = 2
-	GenericNode    LocationCategory = 3
-	BoardingArea   LocationCategory = 4
-)
-
 type Stop struct {
 	StopId        int           	`json:"stopId"`
-	StopCode      string           `json:"stopCode"`
 	StopName      string           `json:"stopName"`
-	StopDesc      string           `json:"stopDesc"`
 	StopLat       float64          `json:"stopLat"`
 	StopLon       float64          `json:"stopLon"`
 	StopUrl       string           `json:"stopUrl"`
-	LocationType  LocationCategory `json:"locationType"`
-	ParentStation int              `json:"parentStation"`
 }
 
 const (
@@ -33,7 +19,7 @@ const (
 	stopFileName = "stops.txt"
 )
 
-func getAllStops() (stopsResult []Stop, err error) {
+func GetAllStops() (stopsResult []Stop, err error) {
 	stops, err := handleFiles.ReadFile(filepath + stopFileName)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllStops failed: %w", err)
@@ -44,9 +30,7 @@ func getAllStops() (stopsResult []Stop, err error) {
 		if err != nil {
 			return nil, fmt.Errorf("getAllStops failed to parse stopId: %w", err)
 		}
-		stopCode := stop[1]
 		stopName := stop[2]
-		stopDesc := stop[3]
 		stopLat, err := strconv.ParseFloat(stop[4], 64)
 		if err != nil {
 			return nil, fmt.Errorf("getAllStops failed to parse stopLat: %w", err)
@@ -56,26 +40,20 @@ func getAllStops() (stopsResult []Stop, err error) {
 			return nil, fmt.Errorf("getAllStops failed to parse stopLon: %w", err)
 		}
 		stopUrl := stop[6]
-		locationType, _ := strconv.Atoi(stop[7])
-		parentStation, _ := strconv.Atoi(stop[8])
 
 		stopsResult = append(stopsResult, Stop{
 			StopId:        stopId,
-			StopCode:      stopCode,
 			StopName:      stopName,
-			StopDesc:      stopDesc,
 			StopLat:       stopLat,
 			StopLon:       stopLon,
 			StopUrl:       stopUrl,
-			LocationType:  LocationCategory(locationType),
-			ParentStation: parentStation,
 		})
 	}
 	return stopsResult, nil
 }
 
 func getStopById(stopId int) (Stop, error) {
-	stops, err := getAllStops()
+	stops, err := GetAllStops()
 	if err != nil {
 		return Stop{}, err
 	}
@@ -89,7 +67,7 @@ func getStopById(stopId int) (Stop, error) {
 }
 
 func getStopNameById(stopId int) (string, error) {
-	stops, err := getAllStops()
+	stops, err := GetAllStops()
 	if err != nil {
 		return "", err
 	}
@@ -107,7 +85,7 @@ func getStopName(stop Stop) string {
 }
 
 func getStopNames(allStopIds [][]int) (stopNames [][]string, err error) {
-	stops, err := getAllStops()
+	stops, err := GetAllStops()
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +110,7 @@ func getStopNames(allStopIds [][]int) (stopNames [][]string, err error) {
 }
 
 func getStopLanAndLon(allStopIds [][]int) (stopLat, stopLon [][]float64, err error){
-	stops, err := getAllStops()
+	stops, err := GetAllStops()
 	if err != nil {
 		return nil, nil, err
 	}

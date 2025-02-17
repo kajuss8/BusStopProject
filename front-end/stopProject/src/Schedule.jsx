@@ -1,44 +1,44 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
+
 import MapComponent from "./MapComponent.jsx";
 
 function Schedule() {
-  const [allRoutesData, setAllRoutesData] = useState(null);
-  const [filteredTypes, setFilteredTypes] = useState(null);
+  //const [allRoutesData, setAllRoutesData] = useState(null);
+  // const [filteredTypes, setFilteredTypes] = useState(null);
   const [stopData, setStopData] = useState(null);
-  const [routeData, setRouteData] = useState(null);
-  const [selectedShape, setSelectedShape] = useState(null);
-  const [selectedRoute, setSelectedRoute] = useState(null);
-  const [stopList, setStopList] = useState(null);
-  const [selectedStopindex, setSelectedStopindex] = useState(0);
-  const [routeTypeName, SetRouteTypeName] = useState(null);
+  // const [routeData, setRouteData] = useState(null);
+  // const [selectedShape, setSelectedShape] = useState(null);
+  // const [selectedRoute, setSelectedRoute] = useState(null);
+  // const [stopList, setStopList] = useState(null);
+  // const [selectedStopindex, setSelectedStopindex] = useState(0);
+  // const [routeTypeName, SetRouteTypeName] = useState(null);
   const [stopId, setStopId] = useState("");
   const [stopIdInput, setStopIdInput] = useState("");
-  const [routeId, setRouteId] = useState("");
+  // const [routeId, setRouteId] = useState("");
   const [routeIdInput, setRouteIdInpute] = useState("");
-  const [coordinates, setCoordinates] = useState(null);
+  // const [coordinates, setCoordinates] = useState(null);
 
-  const handleAllTypes = () => {
-    setFilteredTypes(allRoutesData);
-    SetRouteTypeName("Autobusai ir Troleibusai");
-  };
+  // const handleAllTypes = () => {
+  //   setFilteredTypes(allRoutesData);
+  //   SetRouteTypeName("Autobusai ir Troleibusai");
+  // };
 
-  const handleBusFileter = () => {
-    const bus = allRoutesData.filter(
-      (route) => route.routeTransportType === "A"
-    );
-    setFilteredTypes(bus);
-    SetRouteTypeName("Autobusai");
-  };
+  // const handleBusFileter = () => {
+  //   const bus = allRoutesData.filter(
+  //     (route) => route.routeTransportType === "A"
+  //   );
+  //   setFilteredTypes(bus);
+  //   SetRouteTypeName("Autobusai");
+  // };
 
-  const handleTrolFileter = () => {
-    const trol = allRoutesData.filter(
-      (route) => route.routeTransportType === "T"
-    );
-    setFilteredTypes(trol);
-    SetRouteTypeName("Troleibusai");
-  };
+  // const handleTrolFileter = () => {
+  //   const trol = allRoutesData.filter(
+  //     (route) => route.routeTransportType === "T"
+  //   );
+  //   setFilteredTypes(trol);
+  //   SetRouteTypeName("Troleibusai");
+  // };
 
   const handleStopIdInput = (e) => {
     setStopIdInput(e.target.value);
@@ -56,37 +56,37 @@ function Schedule() {
     setRouteId(routeIdInput);
   };
 
-  const handleStopClick = (index) => {
-    setSelectedStopindex(index);
-  };
+  // const handleStopClick = (index) => {
+  //   setSelectedStopindex(index);
+  // };
 
-  useEffect(() => {
-    handleAllRoutesData();
-  }, []);
+  // useEffect(() => {
+  //   handleAllRoutesData();
+  // }, []);
 
   useEffect(() => {
     handleButtonClickStopId();
     setStopId();
   }, [stopId]);
 
-  useEffect(() => {
-    handleRouteInputRouteId();
+  // useEffect(() => {
+  //   handleRouteInputRouteId();
 
-    setRouteId();
-  }, [routeId]);
+  //   setRouteId();
+  // }, [routeId]);
 
-  const handleAllRoutesData = async () => {
-    await axios
-      .get(`http://localhost:8080/AllRoutes`)
-      .then(function (response) {
-        setAllRoutesData(response.data.routesData);
-        setFilteredTypes(response.data.routesData);
-        SetRouteTypeName("Autobusai ir Troleibusai");
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
+  // const handleAllRoutesData = async () => {
+  //   await axios
+  //     .get(`http://localhost:8080/AllRoutes`)
+  //     .then(function (response) {
+  //       setAllRoutesData(response.data.routesData);
+  //       setFilteredTypes(response.data.routesData);
+  //       SetRouteTypeName("Autobusai ir Troleibusai");
+  //     })
+  //     .catch(function (error) {
+  //       console.log(error);
+  //     });
+  // };
 
   const handleButtonClickStopId = async () => {
     if (stopId) {
@@ -105,59 +105,59 @@ function Schedule() {
     }
   };
 
-  const handleRouteInputRouteId = async () => {
-    if (routeId) {
-      await axios
-        .get(`http://localhost:8080/RouteSchedule/${routeId}`)
-        .then(function (response) {
-          setRouteData(response.data.routeSchedules);
-          setSelectedRoute(response.data.routeSchedules[0]);
-          setStopList(response.data.routeSchedules[0].routeInfo[0].stopInfo);
-          setSelectedStopindex(0);
-          setStopData(null);
-          if (!selectedShape) {
-            setSelectedShape(response.data.routeSchedules[0].shapeId);
-          }
-          if(response){
-            setAllRoutesData();
-            setCoordinates(response.data.routeSchedules[0].routeInfo[0].stopInfo)
-          }
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    }
-  };
+  // const handleRouteInputRouteId = async () => {
+  //   if (routeId) {
+  //     await axios
+  //       .get(`http://localhost:8080/RouteSchedule/${routeId}`)
+  //       .then(function (response) {
+  //         setRouteData(response.data.routeSchedules);
+  //         setSelectedRoute(response.data.routeSchedules[0]);
+  //         setStopList(response.data.routeSchedules[0].routeInfo[0].stopInfo);
+  //         setSelectedStopindex(0);
+  //         setStopData(null);
+  //         if (!selectedShape) {
+  //           setSelectedShape(response.data.routeSchedules[0].shapeId);
+  //         }
+  //         if(response){
+  //           setAllRoutesData();
+  //           setCoordinates(response.data.routeSchedules[0].routeInfo[0].stopInfo)
+  //         }
+  //       })
+  //       .catch(function (error) {
+  //         console.log(error);
+  //       });
+  //   }
+  // };
 
-  const handleSelectChange = (e) => {
-    if (routeData) {
-      const shapeId = e.target.value;
-      const route = routeData.find((route) => route.shapeId === shapeId);
-      const stops = route.routeInfo[0].stopInfo;
-      setCoordinates(stops)
-      setSelectedShape(shapeId);
-      setSelectedRoute(route);
-      setStopList(stops);
-      setSelectedStopindex(0);
-    }
-  };
+  // const handleSelectChange = (e) => {
+  //   if (routeData) {
+  //     const shapeId = e.target.value;
+  //     const route = routeData.find((route) => route.shapeId === shapeId);
+  //     const stops = route.routeInfo[0].stopInfo;
+  //     setCoordinates(stops)
+  //     setSelectedShape(shapeId);
+  //     setSelectedRoute(route);
+  //     setStopList(stops);
+  //     setSelectedStopindex(0);
+  //   }
+  // };
 
-  const groupeTimes = (times) => {
-    const groupedTimes = {};
-    const resultArray = [];
-    times.forEach((time) => {
-      const hour = time.substring(0, 2);
-      if (!groupedTimes[hour]) {
-        groupedTimes[hour] = [];
-        resultArray.push(groupedTimes[hour]);
-      }
-      groupedTimes[hour].push(time);
-    });
-    return resultArray;
-  };
+  // const groupeTimes = (times) => {
+  //   const groupedTimes = {};
+  //   const resultArray = [];
+  //   times.forEach((time) => {
+  //     const hour = time.substring(0, 2);
+  //     if (!groupedTimes[hour]) {
+  //       groupedTimes[hour] = [];
+  //       resultArray.push(groupedTimes[hour]);
+  //     }
+  //     groupedTimes[hour].push(time);
+  //   });
+  //   return resultArray;
+  //  };
 
   return (
-    <div>
+    <div className="container">
       <div className="container p-3">
         <div className="row justify-content-center">
           <div className="col-auto me-4">
