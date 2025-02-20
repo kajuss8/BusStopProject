@@ -2,15 +2,10 @@ package main
 
 import (
 	"busProject/internal/config"
-	//"busProject/internal/gtfs/handleFiles"
-	//"busProject/src/models"
 	"log"
-	//"strconv"
-	//"log"
 	"github.com/gin-gonic/gin"
 	"busProject/internal/database"
-	//"gorm.io/gorm"
-	"busProject/internal/api/routes"
+	"busProject/internal/api/handler"
 )
 
 const(
@@ -91,61 +86,6 @@ const(
 	tripFileName = "trips.txt"
 )
 
-// func getAllStops(ctx *gin.Context) {
-// 	var stops []models.Stop
-// 	result := db.Find(&stops)
-// 	if result.Error != nil {
-// 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stops not found"})
-// 		return
-// 	}
-
-// 	ctx.JSON(http.StatusOK, gin.H{"stopsData": stops})
-// }
-
-// func getAllCalendars(ctx *gin.Context) {
-// 	var calendar []models.Calendar
-// 	result := db.Find(&calendar)
-// 	if result.Error != nil {
-// 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stops not found"})
-// 		return
-// 	}
-
-// 	ctx.JSON(http.StatusOK, gin.H{"calendarsData": calendar})
-// }
-
-// func getAllRoutes(ctx *gin.Context) {
-// 	var routes []models.Route
-// 	result := db.Find(&routes)
-// 	if result.Error != nil {
-// 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stops not found"})
-// 		return
-// 	}
-
-// 	ctx.JSON(http.StatusOK, gin.H{"routesData": routes})
-// }
-
-// func getAllStopTimes(ctx *gin.Context) {
-// 	var stopTimes []models.StopTime
-// 	result := db.Find(&stopTimes)
-// 	if result.Error != nil {
-// 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stops not found"})
-// 		return
-// 	}
-
-// 	ctx.JSON(http.StatusOK, gin.H{"stopTimesData": stopTimes})
-// }
-
-// func getAllTrip(ctx *gin.Context) {
-// 	var trips []models.Trip
-// 	result := db.Find(&trips)
-// 	if result.Error != nil {
-// 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stops not found"})
-// 		return
-// 	}
-
-// 	ctx.JSON(http.StatusOK, gin.H{"tripsData": trips})
-// }
-
 func main() {
 
 	config, err := config.LoadConfiguration(configPath, configName, ConfigType)
@@ -157,7 +97,7 @@ func main() {
 
 	r := gin.Default()
 	database.InitDb(config.DbPath)
-	routes.RegisterRoutes(r)
+	handler.RegisterRoutes(r)
 
 	// 	router.Use(corsMiddleware())
 	// 	router.GET("/AllRoutes", getAllRoutes)

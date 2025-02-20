@@ -1,4 +1,4 @@
-package controllers
+package middleware
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,13 +7,13 @@ import (
 	"busProject/internal/database"
 	)
 
-func GetAllStopTimes(ctx *gin.Context) {
-	var stopTimes []models.StopTime
-	result := database.DB.Find(&stopTimes)
+func GetAllTrip(ctx *gin.Context) {
+	var trips []models.Trip
+	result := database.DB.Find(&trips)
 	if result.Error != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Stops not found"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"stopTimesData": stopTimes})
+	ctx.JSON(http.StatusOK, gin.H{"tripsData": trips})
 }
