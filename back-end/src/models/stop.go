@@ -1,7 +1,7 @@
 package models
 
 import (
-	"busProject/src/handleFiles"
+	"busProject/internal/gtfs/handleFiles"
 	"fmt"
 	"strconv"
 )
@@ -15,7 +15,7 @@ type Stop struct {
 }
 
 const (
-	filepath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/back-end/gtfsFolder/"
+	filepath = "C:/Users/Kajus.Sciaponis/Desktop/BusStopProject/back-end/internal/gtfs/gtfsFolder/"
 	stopFileName = "stops.txt"
 )
 

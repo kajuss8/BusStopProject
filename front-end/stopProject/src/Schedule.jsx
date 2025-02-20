@@ -13,7 +13,7 @@ function Schedule() {
   // const [stopList, setStopList] = useState(null);
   // const [selectedStopindex, setSelectedStopindex] = useState(0);
   // const [routeTypeName, SetRouteTypeName] = useState(null);
-  const [stopId, setStopId] = useState("");
+  // const [stopId, setStopId] = useState("");
   const [stopIdInput, setStopIdInput] = useState("");
   // const [routeId, setRouteId] = useState("");
   const [routeIdInput, setRouteIdInpute] = useState("");
@@ -44,9 +44,9 @@ function Schedule() {
     setStopIdInput(e.target.value);
   };
 
-  const handleStopIdButtonClick = () => {
-    setStopId(stopIdInput);
-  };
+  // const handleStopIdButtonClick = () => {
+  //   setStopId(stopIdInput);
+  // };
 
   const handleRouteIdInput = (e) => {
     setRouteIdInpute(e.target.value);
@@ -64,10 +64,10 @@ function Schedule() {
   //   handleAllRoutesData();
   // }, []);
 
-  useEffect(() => {
-    handleButtonClickStopId();
-    setStopId();
-  }, [stopId]);
+  // useEffect(() => {
+  //   handleButtonClickStopId();
+  //   setStopId();
+  // }, [stopId]);
 
   // useEffect(() => {
   //   handleRouteInputRouteId();
@@ -88,22 +88,22 @@ function Schedule() {
   //     });
   // };
 
-  const handleButtonClickStopId = async () => {
-    if (stopId) {
-      await axios
-        .get(`http://localhost:8080/StopSchedle/${stopId}`)
-        .then(function (response) {
-          setStopData(response.data.stopSchedule);
-          setRouteData(null);
-          if (response) {
-            setAllRoutesData();
-          }
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    }
-  };
+  // const handleButtonClickStopId = async () => {
+  //   if (stopId) {
+  //     await axios
+  //       .get(`http://localhost:8080/StopSchedle/${stopId}`)
+  //       .then(function (response) {
+  //         setStopData(response.data.stopSchedule);
+  //         setRouteData(null);
+  //         if (response) {
+  //           setAllRoutesData();
+  //         }
+  //       })
+  //       .catch(function (error) {
+  //         console.log(error);
+  //       });
+  //   }
+  // };
 
   // const handleRouteInputRouteId = async () => {
   //   if (routeId) {

@@ -1,7 +1,7 @@
 package models
 
 import (
-	"busProject/src/handleFiles"
+	"busProject/internal/gtfs/handleFiles"
 	"fmt"
 	"strconv"
 	"time"

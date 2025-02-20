@@ -10,11 +10,31 @@ function Home() {
   const [routeTypeName, SetRouteTypeName] = useState(null);
   const [searchItem, setSearchItem] = useState("");
   const [searchResult, setSearchResult] = useState(null);
+  const [stopData, setStopData] = useState(null);
+  const [stopId, setStopId] = useState("");
   const displayData = searchItem ? searchResult : filteredTypes;
 
   useEffect(() => {
     handleAllRoutesData();
   }, []);
+
+  useEffect(() => {
+      handleApiSelectionStopId();
+      //setStopId();
+    }, [stopId]);
+
+  const handleStopIdSelect = (e) => {
+    const stopIndex = e.target.value;
+
+    if (stopIndex !== "") {
+      const selectedStop = allStopsData[stopIndex];
+      console.log(selectedStop);
+      setStopId(selectedStop.stopId);
+    } else{
+      setStopId(null);
+    }
+
+  };
 
   const handleInputChange = (e) => {
     const searchTerm = e.target.value;
@@ -28,7 +48,9 @@ function Home() {
     } else {
       const searchResults = filteredTypes.filter(
         (route) =>
-          route.routeLongName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          route.routeLongName
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
           route.routeShortName.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setSearchResult(searchResults);
@@ -37,7 +59,7 @@ function Home() {
 
   const handlesCityStopMap = () => {
     handleAllStopsData();
-    setSearchItem("")
+    setSearchItem("");
   };
 
   const handleAllTypes = () => {
@@ -67,9 +89,23 @@ function Home() {
     setSearchItem("");
   };
 
+  const handleApiSelectionStopId = async () => {
+      if (stopId) {
+        await axios
+          .get(`http://localhost:8080/StopSchedle/${stopId}`)
+          .then(function (response) {
+            setStopData(response.data.stopSchedule.stopInformation);
+            console.log(response.data.stopSchedule);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      }
+  };
+
   const handleAllRoutesData = async () => {
     await axios
-      .get(`http://localhost:8080/AllRoutes`)
+      .get(`http://localhost:8080/api/bus-stops/v1/routesWithDays`)
       .then(function (response) {
         setAllRoutesData(response.data.routesData);
         setFilteredTypes(response.data.routesData);
@@ -93,14 +129,17 @@ function Home() {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container-fluid mt-5">
       {allRoutesData && (
         <div>
           <div className="text-center ">
             <div className="row ">
               <div className="col ">
                 <div className="input-group mb-3 ">
-                  <span className="input-group-text" id="inputGroup-sizing-default">
+                  <span
+                    className="input-group-text"
+                    id="inputGroup-sizing-default"
+                  >
                     Search
                   </span>
                   <input
@@ -173,7 +212,39 @@ function Home() {
             </div>
           </div>
           {allStopsData ? (
-            <AllStopsMapComponent coordinates={allStopsData} searchItem={searchItem}/>
+            <div className="text-center">
+              <div className="row">
+                <div className="col-4">
+                  <select
+                    className="form-select form-select-sm"
+                    aria-label="Small select example"
+                    onChange={handleStopIdSelect}
+                  >
+                    <option selected>Open this select menu</option>
+                    {allStopsData.map((stop, index) => (
+                      <option key={stop.stopId} value={index} >
+                        {stop.stopName}
+                      </option>
+                    ))}
+                  </select>
+                  {stopData && (
+                    <div className="scrollable-list">
+                      {stopData.map((stop, index) => (
+                        <div key={index} className="list-group-item">
+                          {stop.routeShortName} {stop.routeLongName} {stop.workDays.join(" ")}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="col-8">
+                  <AllStopsMapComponent
+                    coordinates={allStopsData}
+                    searchItem={searchItem}
+                  />
+                </div>
+              </div>
+            </div>
           ) : (
             displayData && (
               <div>
