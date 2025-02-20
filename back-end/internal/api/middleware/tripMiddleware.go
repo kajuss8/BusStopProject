@@ -5,7 +5,7 @@ import (
 	"busProject/models"
 	"net/http"
 	"busProject/internal/database"
-	)
+ 	)
 
 func GetAllTrip(ctx *gin.Context) {
 	var trips []models.Trip
